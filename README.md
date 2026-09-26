@@ -4,7 +4,7 @@ An open-source, offline Italian translation addon for **World of Warcraft: Forev
 
 ## Current beta coverage
 
-This first beta includes Italian entries for quest titles and selected quest dialogue, objective tracker text, item names and selected item descriptions, spell names and selected spell descriptions, profession labels, and common interface labels. It translates matching text in the quest log, spellbook, tooltips, and selected panels. Unknown text remains in the game's original language. Use `/wfi status` in game to see the included entry counts.
+This first beta includes **98 quest, 49 item, 223 spell, and 411 interface entries**, including profession labels and selected quest dialogue and objective text. It translates matching text in the quest log, spellbook, tooltips, and selected panels. Unknown text remains in the game's original language. Use `/wfi status` in game to see the loaded entry counts.
 
 An addon cannot replace every string in the client. This beta pack is **not a complete Italian localization**: combat UI, nameplates, map artwork, audio, cinematics, player chat, third-party addons, server messages, and unencountered content can still appear in English. New Forever content must be captured, translated, and tested as it becomes available. The addon does not translate arbitrary text automatically during play and does not contact an AI service.
 
