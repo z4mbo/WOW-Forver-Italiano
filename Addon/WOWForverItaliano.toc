@@ -1,0 +1,32 @@
+## Interface: 16001
+## Title: WOW Forver - Italiano
+## Notes: Traduzioni italiane offline per World of Warcraft: Forever.
+## Notes-itIT: Traduzioni italiane offline per missioni, oggetti, incantesimi, professioni e interfaccia di WoW: Forever.
+## Author: WOW Forver - Italiano contributors
+## Version: 0.1.0-beta
+## Category: Localization
+## SavedVariables: WFI_DB
+## IconTexture: Interface\AddOns\WOWForverItaliano\Media\Icon
+
+Core.lua
+Data\UI.lua
+Data\Professions.lua
+Data\Items.lua
+Data\Characters.lua
+Data\Quests.lua
+Data\QuestTitlesExtra.lua
+Data\TirisfalTitles.lua
+Data\LiveQuests.lua
+Data\LiveItems.lua
+Data\LiveUI.lua
+Data\MapUI.lua
+Data\TrackerObjectives.lua
+Data\SpellsCaster.lua
+Data\SpellsClasses.lua
+Data\SpellsExtra.lua
+Data\SpellbookUI.lua
+Data\UIExtra.lua
+Modules\UI.lua
+Modules\Items.lua
+Modules\Spells.lua
+Modules\Quests.lua
