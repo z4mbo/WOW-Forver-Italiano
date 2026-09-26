@@ -43,6 +43,7 @@ lua.execute(
     QuestInfo_ShowDescriptionText = function() end
     QuestInfo_ShowObjectivesText = function() end
     QuestInfo_ShowRewardText = function() end
+    QuestInfo_Display = function() end
     QuestFrameProgressPanel_OnShow = function() end
     QuestInfoFrame = { questLog = false }
     makeText = function(initial)
@@ -55,6 +56,7 @@ lua.execute(
         }
     end
     QuestInfoTitleHeader = makeText("A New Plague")
+    QuestInfoDescriptionText = makeText("English NPC quest description")
     QuestInfoRewardText = makeText("Good work, <name>.")
     QuestProgressTitleText = makeText("A New Plague")
     QuestProgressText = makeText("Have you gathered the blood, <name>?")
@@ -82,10 +84,20 @@ lua.execute(
     hooks.QuestInfo_ShowRewardText()
     assert(not QuestInfoRewardText.text:find("<name>", 1, true))
     assert(QuestInfoRewardText.text:find("Tester", 1, true))
+    currentQuest = 99999 -- Forever can assign a different ID than Classic.
+    QuestInfoTitleHeader.text = "Rovistare ad Albamorta"
+    hooks.QuestInfo_Display()
+    assert(QuestInfoDescriptionText.text == NS.data.quests[3902].description)
+    currentQuest = 367 -- A reused beta ID must not apply old dialogue.
+    QuestInfoTitleHeader.text = "Unknown Forever Quest"
+    QuestInfoDescriptionText.text = "New beta dialogue"
+    hooks.QuestInfo_Display()
+    assert(QuestInfoDescriptionText.text == "New beta dialogue")
     itemCallback(testTooltip, { id = 6948 })
     assert(TestTooltipTextLeft1.text == "Pietra del Ritorno")
     local rendered = NS.renderText("Ciao <name>, <class> <race>!")
     assert(rendered == "Ciao Tester, Guerriero Non Morto!")
+    assert(NS.renderText("Prima frase.$b$bSeconda frase.") == "Prima frase.\\n\\nSeconda frase.")
     WFI_DB.enabled = false
     assert(not NS.enabled())
     """

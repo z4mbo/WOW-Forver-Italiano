@@ -4,9 +4,9 @@ An open-source, offline Italian translation addon for **World of Warcraft: Forev
 
 ## Current beta coverage
 
-This first beta includes **98 quest, 49 item, 223 spell, and 411 interface entries**, including profession labels and selected quest dialogue and objective text. It translates matching text in the quest log, spellbook, tooltips, and selected panels. Unknown text remains in the game's original language. Use `/wfi status` in game to see the loaded entry counts.
+Version **0.2.0-beta** contains 1,180 distinct interface label keys, 98 quest IDs, 49 item IDs, and 223 spell IDs. The interface packs include character, reputation, skills, guild, collections, settings, Edit Mode, professions, and other client panels. Many quest entries contain only a title; dialogue, objectives, and rewards have been translated for selected quests whose source text was found in the beta cache or checked against a source. The client is still English, so unhandled text stays English. Use `/wfi status` in game to see loaded entry counts.
 
-An addon cannot replace every string in the client. This beta pack is **not a complete Italian localization**: combat UI, nameplates, map artwork, audio, cinematics, player chat, third-party addons, server messages, and unencountered content can still appear in English. New Forever content must be captured, translated, and tested as it becomes available. The addon does not translate arbitrary text automatically during play and does not contact an AI service.
+This beta pack is **not a complete Italian localization**. The local quest cache contained 50 quest records, including only 10 with titles already catalogued in the addon; other quests and new server content are still missing. Some combat UI, nameplates, map artwork, audio, cinematics, player chat, third-party addons, server messages, and unencountered content can still appear in English. Classic-sourced quest entries are applied only when their live title matches the recorded source, so a reused beta ID cannot show unrelated Italian dialogue. The addon does not translate arbitrary text automatically during play and does not contact an AI service.
 
 ![Italian quest log and tracker in the Forever beta](media/quest-log-italiano.jpg)
 
@@ -14,7 +14,7 @@ An addon cannot replace every string in the client. This beta pack is **not a co
 
 ## Install on the Forever beta
 
-1. Download [the beta ZIP](dist/WOWForverItaliano-0.1.0-beta.zip) or build it using `tools/build-release.ps1`.
+1. Download [the beta ZIP](dist/WOWForverItaliano-0.2.0-beta.zip) or build it using `tools/build-release.ps1`.
 2. Extract its `WOWForverItaliano` folder into `World of Warcraft/_classic_beta_/Interface/AddOns/`.
 3. Enable **WOW Forver - Italiano** in the game's AddOns screen, then type `/reload`.
 4. Type `/wfi status` to check the loaded translation counts.
@@ -30,12 +30,14 @@ The folder must contain `WOWForverItaliano.toc` directly; avoid an extra nested 
 | `/wfi off` | Disable translations; `/reload` restores already rendered English text |
 | `/wfi capture on` | Save encountered quest, item, and spell source text locally |
 | `/wfi capture off` | Stop recording source text |
+| `/wfi audit globals` | Save this client's exact UI globals locally for source review |
+| `/wfi audit visible` | Save visible text from selected Blizzard panels locally |
 
-Capture is **off by default**. Captured data stays in the client's local `WTF/Account/.../SavedVariables/WOWForverItaliano.lua` file and is never sent by the addon. Do not upload the full SavedVariables file publicly without reviewing it; the account path and other local data may be sensitive. You can copy only relevant quest, item, or spell entries into a contribution issue.
+Capture and audits are **off by default**. Captured data stays in the client's local `WTF/Account/.../SavedVariables/WOWForverItaliano.lua` file and is never sent by the addon. Run `/reload` after an audit to write it to disk. Do not upload the full SavedVariables file publicly; copy only the relevant source strings into a contribution issue.
 
 ## Contribute translations
 
-Quest entries are indexed by quest ID in [`Addon/Data/Quests.lua`](Addon/Data/Quests.lua); item entries by item ID in [`Addon/Data/Items.lua`](Addon/Data/Items.lua); and spell entries by spell ID in [`Addon/Data/SpellsCaster.lua`](Addon/Data/SpellsCaster.lua), [`Addon/Data/SpellsClasses.lua`](Addon/Data/SpellsClasses.lua), and [`Addon/Data/SpellsExtra.lua`](Addon/Data/SpellsExtra.lua). Interface and profession labels are in [`Addon/Data/UI.lua`](Addon/Data/UI.lua), [`Addon/Data/Professions.lua`](Addon/Data/Professions.lua), and other small data packs in that directory. See [CONTRIBUTING.md](CONTRIBUTING.md) for the format and review rules. This initial pack was translated with GPT Luna agents and requires in-game proofreading, particularly for gender, grammar, exact beta text, and new Forever content.
+Quest entries are indexed by quest ID in [`Addon/Data/Quests.lua`](Addon/Data/Quests.lua) and the other quest packs. Item and spell entries live in [`Addon/Data/Items.lua`](Addon/Data/Items.lua) and the `Spells*.lua` packs. Interface translations are in the remaining `Addon/Data` files. [`CONTRIBUTING.md`](CONTRIBUTING.md) describes the source and review rules. [`tools/extract_questcache_text.py`](tools/extract_questcache_text.py) can inventory verbatim cache fragments by quest ID, but its output does not identify each fragment's role and must be reviewed manually. [`tools/check-client-ui-source.py`](tools/check-client-ui-source.py) checks UI keys against a local client global audit. Translation work used GPT Luna agents and still needs in-game proofreading as Forever changes.
 
 ## License and attribution
 

@@ -1,7 +1,7 @@
 local addonName, ns = ...
 
 ns.data = ns.data or {}
-ns.version = "0.1.0-beta"
+ns.version = "0.2.0-beta"
 
 local function isSafeString(value)
     if type(issecretvalue) == "function" and issecretvalue(value) then
@@ -32,6 +32,9 @@ end
 function ns.renderText(value)
     value = ns.safeText(value)
     if not value then return nil end
+    -- Quest source text uses $b (and occasionally $B) for a line break.
+    -- FontString:SetText does not expand these server-side tokens for us.
+    value = value:gsub("%$[bB]", "\n")
 
     local playerName = type(UnitName) == "function" and ns.safeText(UnitName("player")) or nil
     value = substitute(value, "<[Nn][Aa][Mm][Ee]>", playerName)
@@ -130,6 +133,17 @@ local function count(tableValue)
     return n
 end
 
+local function countLabels()
+    local labels = {}
+    for _, source in ipairs({ ns.data.ui, ns.data.characterPanels,
+        ns.data.guildCollections, ns.data.settings, ns.data.helpTips }) do
+        if type(source) == "table" then
+            for english in pairs(source) do labels[english] = true end
+        end
+    end
+    return count(labels)
+end
+
 local function say(message)
     local chat = DEFAULT_CHAT_FRAME
     if chat and type(chat.AddMessage) == "function" then
@@ -158,11 +172,22 @@ local function slash(input)
         end
     elseif command == "status" then
         say(string.format("v%s • %d etichette UI • %d oggetti • %d missioni • %d incantesimi • raccolta %s",
-            ns.version, count(ns.data.ui), count(ns.data.items), count(ns.data.quests),
+            ns.version, countLabels(), count(ns.data.items), count(ns.data.quests),
             count(ns.data.spells),
             WFI_DB.capture and "attiva" or "disattiva"))
+    elseif command == "audit" then
+        local mode = type(input) == "string" and input:lower():match("^%s*audit%s+(%S+)") or nil
+        if mode == "globals" and type(ns.auditGlobals) == "function" then
+            say(string.format("Verifica: %d stringhe del client salvate localmente. Usa /reload per scriverle su disco.",
+                ns.auditGlobals()))
+        elseif mode == "visible" and type(ns.auditVisible) == "function" then
+            say(string.format("Verifica: %d testi visibili salvati localmente. Usa /reload per scriverli su disco.",
+                ns.auditVisible()))
+        else
+            say("Uso: /wfi audit globals oppure /wfi audit visible")
+        end
     else
-        say("Comandi: /wfi on, /wfi off, /wfi status, /wfi capture on|off")
+        say("Comandi: /wfi on, /wfi off, /wfi status, /wfi capture on|off, /wfi audit globals|visible")
     end
 end
 

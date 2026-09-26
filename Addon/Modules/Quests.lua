@@ -29,9 +29,50 @@ local function currentQuestID(questLog)
     return ok and validQuestID(value) or nil
 end
 
+local function titleMatches(entry, title)
+    title = ns.safeText(title)
+    if not title or type(entry) ~= "table" then return false end
+    title = title:gsub("|c%x%x%x%x%x%x%x%x", ""):gsub("|r", "")
+    title = title:gsub("|T.-|t", ""):gsub("^%[%d+%]%s*", "")
+    return title == entry.enTitle or title == entry.title
+end
+
 local function questInfoID()
     local frame = _G.QuestInfoFrame
-    return currentQuestID(frame and frame.questLog)
+    local id = currentQuestID(frame and frame.questLog)
+
+    -- During an NPC offer Forever can populate the title before GetQuestID()
+    -- becomes available. Match the visible title only when it identifies one
+    -- quest unambiguously; the generic UI pass may already have translated it.
+    local titles = {}
+    if not (frame and frame.questLog) and type(GetTitleText) == "function" then
+        local ok, sourceTitle = pcall(GetTitleText)
+        if ok and ns.safeText(sourceTitle) then titles[#titles + 1] = sourceTitle end
+    end
+    local titleFrame = _G.QuestInfoTitleHeader
+    if titleFrame and type(titleFrame.GetText) == "function" then
+        local title = ns.safeText(titleFrame:GetText())
+        if title then titles[#titles + 1] = title end
+    end
+    local currentEntry = id and ns.data.quests and ns.data.quests[id]
+    if currentEntry then
+        for i = 1, #titles do
+            if titleMatches(currentEntry, titles[i]) then return id end
+        end
+    end
+    for i = 1, #titles do
+        local match
+        for questID, entry in pairs(ns.data.quests or {}) do
+            if titleMatches(entry, titles[i]) then
+                if match and match ~= questID then match = nil; break end
+                match = questID
+            end
+        end
+        if match then return match end
+    end
+    -- A beta server can repurpose a Classic ID. No matching visible title
+    -- means there is no verified basis for replacing its quest text.
+    return nil
 end
 
 local function canTranslate()
@@ -78,6 +119,11 @@ end
 
 local function applyProgress(capture)
     local id = currentQuestID(false)
+    local title = _G.QuestProgressTitleText
+    if not (id and title and type(title.GetText) == "function" and
+            titleMatches(ns.data.quests and ns.data.quests[id], title:GetText())) then
+        return
+    end
     apply(id, "title", _G.QuestProgressTitleText, nil, capture)
     apply(id, "progress", _G.QuestProgressText, nil, capture)
 end
@@ -135,6 +181,15 @@ local function installHooks()
         -- packs call this field "reward", so accept either spelling.
         applyInfo("completion", "QuestInfoRewardText", "reward", true)
     end)
+    -- Forever's NPC offer panel can write the description again after
+    -- QuestInfo_ShowDescriptionText. Translate after its complete redraw too.
+    hook("QuestInfo_Display", function()
+        local id = questInfoID()
+        apply(id, "title", _G.QuestInfoTitleHeader)
+        apply(id, "description", _G.QuestInfoDescriptionText)
+        apply(id, "objectives", _G.QuestInfoObjectivesText)
+        apply(id, "completion", _G.QuestInfoRewardText, "reward")
+    end)
     hook("QuestFrameProgressPanel_OnShow", function()
         applyProgress(true)
     end)
@@ -142,6 +197,7 @@ local function installHooks()
     -- the title again after the individual QuestInfo callbacks have run.
     hook("QuestMapFrame_ShowQuestDetails", function(id)
         id = validQuestID(id)
+        if id ~= questInfoID() then return end
         apply(id, "title", _G.QuestInfoTitleHeader, nil, true)
         apply(id, "description", _G.QuestInfoDescriptionText, nil, true)
         apply(id, "objectives", _G.QuestInfoObjectivesText, nil, true)
@@ -151,7 +207,9 @@ end
 
 local function refreshVisible()
     local info = _G.QuestInfoFrame
-    if info and info.IsVisible and info:IsVisible() then
+    local offer = _G.QuestFrameDetailPanel
+    if (info and info.IsVisible and info:IsVisible()) or
+       (offer and offer.IsVisible and offer:IsVisible()) then
         applyInfo("title", "QuestInfoTitleHeader")
         applyInfo("description", "QuestInfoDescriptionText")
         applyInfo("objectives", "QuestInfoObjectivesText")
@@ -166,11 +224,21 @@ end
 local events = CreateFrame("Frame")
 events:RegisterEvent("ADDON_LOADED")
 events:RegisterEvent("PLAYER_REGEN_ENABLED")
+events:RegisterEvent("QUEST_DETAIL")
+events:RegisterEvent("QUEST_PROGRESS")
+events:RegisterEvent("QUEST_COMPLETE")
 events:SetScript("OnEvent", function(_, event)
     if event == "ADDON_LOADED" then
         installHooks()
     elseif event == "PLAYER_REGEN_ENABLED" then
         refreshVisible()
+    elseif event == "QUEST_DETAIL" or event == "QUEST_PROGRESS" or
+           event == "QUEST_COMPLETE" then
+        refreshVisible()
+        if C_Timer and type(C_Timer.After) == "function" then
+            C_Timer.After(0, refreshVisible)
+            C_Timer.After(0.2, refreshVisible)
+        end
     end
 end)
 
