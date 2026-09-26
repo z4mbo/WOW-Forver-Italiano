@@ -10,6 +10,8 @@ An addon cannot replace every string in the client. This beta pack is **not a co
 
 ![Italian quest log and tracker in the Forever beta](media/quest-log-italiano.jpg)
 
+![Italian priest spellbook in the Forever beta](media/spellbook-italiano.jpg)
+
 ## Install on the Forever beta
 
 1. Download [the beta ZIP](dist/WOWForverItaliano-0.1.0-beta.zip) or build it using `tools/build-release.ps1`.
