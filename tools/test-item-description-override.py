@@ -87,6 +87,21 @@ class ItemDescriptionOverrideTests(unittest.TestCase):
         self.assertEqual(show(2444, "Other shield", "Unchanged body"),
                          ("Other shield", "Unchanged body"))
 
+    def test_corrupt_beta_italian_body_requires_exact_item_and_name(self):
+        self.ns.data.itemDescriptionOverrides[25].badIt = "Descrizione di un altro oggetto."
+        self.ns.data["items"] = self.lua.table()
+        self.ns.data["items"][25] = self.lua.table(
+            en="Worn Shortsword", itSource="Nome errato della beta",
+            name="Spada Corta Consunta",
+        )
+        show = self.lua.globals().showItem
+        self.assertEqual(show(25, "Nome errato della beta", "Descrizione di un altro oggetto."),
+                         ("Spada Corta Consunta", "Una spada malridotta."))
+        self.assertEqual(show(26, "Nome errato della beta", "Descrizione di un altro oggetto."),
+                         ("Nome errato della beta", "Descrizione di un altro oggetto."))
+        self.assertEqual(show(25, "Nome di un altro oggetto", "Descrizione di un altro oggetto."),
+                         ("Nome di un altro oggetto", "Descrizione di un altro oggetto."))
+
     def test_exact_item_alias_checks_name_and_id(self):
         self.lua.execute(
             (ADDON / "Data/ItemTranslationAliases.lua").read_text(encoding="utf-8"),

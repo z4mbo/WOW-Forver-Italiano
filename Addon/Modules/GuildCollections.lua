@@ -21,6 +21,14 @@ local scheduled, scanning = false, false
 local translations = {}
 local scheduleRefresh
 
+local function rootFrame(name)
+    local direct = _G[name]
+    if direct then return direct end
+    local parentName, childName = name:match("^([^.]+)%.([^.]+)$")
+    local parent = parentName and _G[parentName]
+    return parent and parent[childName] or nil
+end
+
 local function rebuildTranslations()
     translations = {}
     for _, sourceTable in ipairs({
@@ -92,7 +100,7 @@ local function refresh()
        (type(InCombatLockdown) == "function" and InCombatLockdown()) then return end
     scanning = true
     for i = 1, #roots do
-        local frame = _G[roots[i]]
+        local frame = rootFrame(roots[i])
         if frame then scan(frame, 1800) end
     end
     scanning = false
@@ -111,7 +119,7 @@ end
 
 local function installHooks()
     for i = 1, #roots do
-        local frame = _G[roots[i]]
+        local frame = rootFrame(roots[i])
         if frame and not hooked[roots[i]] and type(frame.HookScript) == "function" then
             local ok = pcall(frame.HookScript, frame, "OnShow", scheduleRefresh)
             if ok then hooked[roots[i]] = true end

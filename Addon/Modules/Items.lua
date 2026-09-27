@@ -44,6 +44,9 @@ local function processTooltip(tooltip, data)
     if overrideMatches and ns.safeText(body.enDescription) and
        ns.safeText(body.description) then
         ns.translateTooltipBody(tooltipName, body.enDescription, body.description)
+        if ns.safeText(body.badIt) then
+            ns.translateTooltipBody(tooltipName, body.badIt, body.description)
+        end
     end
 end
 

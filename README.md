@@ -4,11 +4,11 @@ An open-source, offline Italian translation addon for **World of Warcraft: Forev
 
 ## Current beta coverage
 
-Version **0.4.0-beta** contains thousands of ID-scoped spell, aura, and item tooltip translations, plus verified labels for character, reputation, skills, guild, collections, settings, Edit Mode, professions, and other client panels. It retains 141 quest IDs and 178 NPC IDs. Run `tools/catalog-stats.py` for current catalogue counts and `/wfi status` in game for loaded counts. These numbers describe matching records in the addon, not a percentage of gameplay or proof that every tooltip has appeared in Italian during play.
+Version **0.5.0-beta** adds exact-source translations for every blank or English-identical localized text field found in the 14 DB2 text tables extracted from the installed Forever beta build **1.60.1.70009**. The audited catalogue contains **53,845 field/ID gaps with zero unrepresented**, plus corrections for **1,765** high-confidence Italian fields that contain unrelated text. It retains 141 quest IDs and expands the NPC-name catalogue. Run `tools/catalog-stats.py` for current catalogue counts and `/wfi status` in game for loaded counts. Catalogue matches do not establish that every record can be displayed in Italian at runtime.
 
-The exact local DB2 gap counts for this release are in [`docs/coverage-0.4.0.it.md`](docs/coverage-0.4.0.it.md).
+The exact local DB2 gap counts for this release are in [`docs/coverage-0.5.0.it.md`](docs/coverage-0.5.0.it.md).
 
-The read-only audit of the installed beta build **1.60.1.70009** identifies 11,292 spell-description, 4,616 aura-description, 3,984 item-description, 16,773 spell-name, and 7,351 item-name IDs whose Italian field is blank or identical to English. `tools/report-local-db2-coverage.py` counts only addon records with the exact same ID and English source. It does not count server-only text or prove that the game displays each record. The beta also has some higher-ID Italian fields containing unrelated text, so these gap totals understate the localization problem.
+The read-only audit identifies 11,292 spell-description, 4,616 aura-description, 3,984 item-description, 16,773 spell-name, and 7,351 item-name IDs whose Italian field is blank or identical to English. The coverage reporters count only addon records with the exact same ID and English source. They do not count server-only text or prove that the game displays each record. The beta also has some Italian fields containing unrelated text; a separate conservative audit covers 1,765 such entries.
 
 Some missing text was reused from the locally installed Retail Italian data after exact source and ambiguity checks. UI reuse additionally requires matching `GlobalStrings.db2` ID and tag in the beta and Retail clients. The process is documented in [`tools/retail-db2-reuse.md`](tools/retail-db2-reuse.md). The generated Lua packs work offline and do not require Retail to be installed by players.
 
@@ -26,7 +26,7 @@ Quest descriptions and NPC dialogue are often sent by the server. The installed 
 
 ## Install on the Forever beta
 
-1. Download [the beta ZIP](dist/WOWForverItaliano-0.4.0-beta.zip) or build it using `tools/build-release.ps1`.
+1. Download [the beta ZIP](dist/WOWForverItaliano-0.5.0-beta.zip) or build it using `tools/build-release.ps1`.
 2. Extract its `WOWForverItaliano` folder into `World of Warcraft/_classic_beta_/Interface/AddOns/`.
 3. Enable **WOW Forver - Italiano** in the game's AddOns screen, then type `/reload`.
 4. Type `/wfi status` to check the loaded translation counts.

@@ -16,8 +16,10 @@ jobs:
       - run: python tools/validate-lua.py
       - run: python tools/smoke-test.py
       - run: python tools/test-dynamic-spell.py
+      - run: python tools/test-spell-template-token-order.py
       - run: python tools/check-spell-renderability.py
       - run: python tools/test-missing-spell-body.py
       - run: python tools/test-item-description-override.py
+      - run: python tools/test-globalstrings.py
       - shell: pwsh
         run: ./tools/build-release.ps1

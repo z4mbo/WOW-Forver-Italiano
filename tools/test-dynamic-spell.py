@@ -181,6 +181,39 @@ class DynamicSpellTests(unittest.TestCase):
             self.assertIn("per " + italian_duration + ".",
                           self.lua.globals().fireSpell(5277, "Unmapped client name", body))
 
+    def test_separate_rank_subtext_uses_exact_spell_id(self):
+        self.lua.execute((ADDON / "Data/CompleteSpellSubtext001.lua").read_text(encoding="utf-8"),
+                         "WOWForverItaliano", self.ns)
+        self.ns.data.spells[10] = None
+        self.lua.execute('''
+            DynamicTooltipTextLeft1 = makeText("Unmapped client name")
+            DynamicTooltipTextLeft2 = makeText("Unrelated body")
+            DynamicTooltipTextLeft3 = makeText("Rank 1")
+            spellCallback({ GetName = function() return "DynamicTooltip" end }, { id = 10 })
+        ''')
+        self.assertEqual(self.lua.globals().DynamicTooltipTextLeft3.text, "Grado 1")
+        self.lua.execute('''
+            DynamicTooltipTextLeft3 = makeText("Rank 1")
+            spellCallback({ GetName = function() return "DynamicTooltip" end }, { id = 999999 })
+        ''')
+        self.assertEqual(self.lua.globals().DynamicTooltipTextLeft3.text, "Rank 1")
+
+    def test_exact_beta_crlf_description_alias(self):
+        self.lua.execute(
+            (ADDON / "Data/CompleteSpellDescriptionAliases001.lua").read_text(encoding="utf-8"),
+            "WOWForverItaliano", self.ns)
+        alias = self.ns.data.spellDescriptionBetaOverrides[759]
+        self.ns.data.spellDescriptionOverrides[759] = None
+        self.ns.data.spells[759].enDescription = None
+        self.ns.data.spells[759].description = None
+        source = alias.en.replace("$5405s1", "1250")
+        rendered = self.render(759, source)
+        self.assertIn("ripristinare istantaneamente 1250 mana", rendered)
+        self.assertIn("\r\n\r\nGli oggetti creati", rendered)
+        self.assertEqual(self.lua.globals().fireSpell(760, "Unmapped client name", source), source)
+        changed = source.replace("mana agate", "mana stone")
+        self.assertEqual(self.render(759, changed), changed)
+
     def test_bulk_dynamic_description_uses_exact_id_and_template(self):
         source = ("Turns the caster invisible for 15 sec, though this spell "
                   "is unstable and may end early.")
@@ -258,6 +291,72 @@ class DynamicSpellTests(unittest.TestCase):
             self.lua.globals().fireSpell(99998, "Unmapped", "Heals someone for 37."),
             "Heals someone for 37.",
         )
+
+    def test_verified_referenced_spell_description(self):
+        overrides = self.ns.data.spellDescriptionOverrides
+        overrides[99996] = self.lua.table(
+            en="Aura: $@spelldesc99995 ($s1).",
+            description="Effetto: $@spelldesc99995 ($s1).",
+        )
+        overrides[99995] = self.lua.table(
+            en="Restores health.", description="Rigenera la salute."
+        )
+        self.assertEqual(
+            self.lua.globals().fireSpell(
+                99996, "Unmapped", "Aura: Restores health. (37)."
+            ),
+            "Effetto: Rigenera la salute. (37).",
+        )
+        changed = "Aura: Restores mana. (37)."
+        self.assertEqual(self.lua.globals().fireSpell(99996, "Unmapped", changed), changed)
+        self.assertEqual(
+            self.lua.globals().fireSpell(99997, "Unmapped", "Aura: Restores health. (37)."),
+            "Aura: Restores health. (37).",
+        )
+
+    def test_referenced_spell_description_id_mismatch_fails_closed(self):
+        overrides = self.ns.data.spellDescriptionOverrides
+        overrides[99992] = self.lua.table(
+            en="Aura: $@spelldesc99995 ($s1).",
+            description="Effetto: $@spelldesc99994 ($s1).",
+        )
+        overrides[99994] = self.lua.table(
+            en="Restores health.", description="Rigenera la salute."
+        )
+        overrides[99995] = self.lua.table(
+            en="Restores health.", description="Recupera la salute."
+        )
+        source = "Aura: Restores health. (37)."
+        self.assertEqual(self.lua.globals().fireSpell(99992, "Unmapped", source), source)
+
+    def test_static_referenced_spell_description_matches_expanded_source_exactly(self):
+        overrides = self.ns.data.spellDescriptionOverrides
+        self.ns.data.spells[9999990] = None
+        overrides[9999990] = self.lua.table(
+            en="Message: $@spelldesc9999989",
+            description="Messaggio: $@spelldesc9999989",
+        )
+        overrides[9999989] = self.lua.table(
+            en="Restores health.", description="Rigenera la salute."
+        )
+        source = "Message: Restores health."
+        self.assertEqual(
+            self.lua.globals().fireSpell(9999990, "Unmapped", source),
+            "Messaggio: Rigenera la salute.",
+        )
+        changed = "Message: Restores mana."
+        self.assertEqual(self.lua.globals().fireSpell(9999990, "Unmapped", changed), changed)
+
+    def test_referenced_spell_description_with_unresolved_target_stays_unchanged(self):
+        overrides = self.ns.data.spellDescriptionOverrides
+        overrides[99994] = self.lua.table(
+            en="Aura: $@spelldesc99993.", description="Effetto: $@spelldesc99993."
+        )
+        overrides[99993] = self.lua.table(
+            en="Restores $s1 health.", description="Rigenera $s1 salute."
+        )
+        source = "Aura: Restores 12 health."
+        self.assertEqual(self.lua.globals().fireSpell(99994, "Unmapped", source), source)
 
     def test_uppercase_plural_selector_maps_both_forms(self):
         self.ns.data.spellDescriptionOverrides[99997] = self.lua.table(

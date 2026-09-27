@@ -13,6 +13,9 @@ const tables = {
   SpellName: ['Name_lang'],
   ChrClasses: ['Name_lang', 'Name_female_lang', 'Name_male_lang'],
   ItemSparse: ['Description_lang', 'Display3_lang', 'Display2_lang', 'Display1_lang', 'Display_lang'],
+  QuestLine: ['Name_lang', 'Description_lang'],
+  QuestInfo: ['InfoName_lang'],
+  SkillLine: ['DisplayName_lang', 'Description_lang', 'AlternateVerb_lang', 'HordeDisplayName_lang'],
 };
 
 function schema(name, layoutHash) {

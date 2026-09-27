@@ -1,0 +1,183 @@
+-- Generated from exact Forever beta DB2 sources and GPT Luna low translations.
+-- ID/field/source guards are retained for catalogue verification and runtime use.
+local _, ns = ...
+if not ns then return end
+ns.data = ns.data or {}
+ns.data.ui = ns.data.ui or {}
+ns.data.npcs = ns.data.npcs or {}
+ns.data.extraClientTexts = ns.data.extraClientTexts or {}
+local records = {
+    { en = "South Seas UNUSED", it = "Mari del Sud UNUSED", places = { { "AreaTable.AreaName_lang", 296 } } },
+    { en = "Southern Barrens", it = "Savane Meridionali", places = { { "AreaTable.AreaName_lang", 1156 } } },
+    { en = "Southpoint Tower", it = "Torre di Southpoint", places = { { "AreaTable.AreaName_lang", 285 } } },
+    { en = "Southshore", it = "Riva Meridionale", places = { { "AreaTable.AreaName_lang", 271 } } },
+    { en = "Spawn of Grubthor", it = "Progenie di Grubthor", places = { { "Creature.Name_lang", 276331 } } },
+    { en = "Spectral Bear Cub", it = "Cucciolo d'orso spettrale", places = { { "Creature.Name_lang", 268840 } } },
+    { en = "Spirit RiseUNUSED", it = "Ascesa degli SpiritiUNUSED", places = { { "AreaTable.AreaName_lang", 475 } } },
+    { en = "Stalker's Thicket", it = "Boschetto del Predatore", places = { { "AreaTable.AreaName_lang", 16878 } } },
+    { en = "Starfall Barrow Den", it = "Tana del Tumulo di Starfall", places = { { "Map.MapName_lang", 2817 } } },
+    { en = "Storm Cliffs", it = "Scogliere della Tempesta", places = { { "Map.MapName_lang", 2791 } } },
+    { en = "Stormr's Test Map", it = "Mappa di prova di Stormr", places = { { "AreaTable.AreaName_lang", 16662 } } },
+    { en = "Stormwind Harbor", it = "Porto di Roccavento", places = { { "AreaTable.AreaName_lang", 17203 } } },
+    { en = "Strahnbrad", it = "Strahnbrad", places = { { "AreaTable.AreaName_lang", 280 } } },
+    { en = "Summit of Eternity", it = "Vetta dell'Eternità", places = { { "AreaTable.AreaName_lang", 16849 } } },
+    { en = "Sunken Temple", it = "Tempio Sommerso", places = { { "AreaTable.AreaName_lang", 1417 } } },
+    { en = "Survivor", it = "Sopravvissuto", places = { { "Achievement.Title_lang", 15332 } } },
+    { en = "Survivor of the Damned", it = "Sopravvissuto dei Dannati", places = { { "Achievement.Title_lang", 15335 } } },
+    { en = "Survivor of the Firelord", it = "Sopravvissuto del Signore del Fuoco", places = { { "Achievement.Title_lang", 15330 } } },
+    { en = "Survivor of the Old God", it = "Sopravvissuto dell'Antico Dio", places = { { "Achievement.Title_lang", 15334 } } },
+    { en = "Survivor of the Shadow Flame", it = "Sopravvissuto della Fiamma dell'Ombra", places = { { "Achievement.Title_lang", 15333 } } },
+    { en = "Syndicate Disguise", it = "Travestimento del Cartello", places = { { "Faction.Name_lang", 2813 } } },
+    { en = "Tainted Foothills", it = "Pedemonti Corrotti", places = { { "AreaTable.AreaName_lang", 16853 } } },
+    { en = "Tallstrider Hatchling", it = "Cucciolo di struzzo", places = { { "Creature.Name_lang", 274334 } } },
+    { en = "Tan Furbolg Pet", it = "Mascotte furbolg marrone", places = { { "Creature.Name_lang", 271877 } } },
+    { en = "Tanaris", it = "Tanaris", places = { { "AreaTable.AreaName_lang", 440 } } },
+    { en = "Taunka", it = "Taunka", places = { { "ChrRaces.Name_lang", 19 } } },
+    { en = "Tauren Druid", it = "Druido tauren", places = { { "Creature.Name_lang", 272214 } } },
+    { en = "Tauren Hunter", it = "Cacciatore tauren", places = { { "Creature.Name_lang", 272241 } } },
+    { en = "Teldrassil", it = "Teldrassil", places = { { "AreaTable.AreaName_lang", 141 } } },
+    { en = "Tempest's Reach", it = "Raggiungimento della Tempesta", places = { { "AreaTable.AreaName_lang", 16763 } } },
+    { en = "Temple of Ahn'Qiraj", it = "Tempio di Ahn'Qiraj", places = { { "AreaTable.AreaName_lang", 16076 } } },
+    { en = "Temple of Arkkoran", it = "Tempio di Arkkoran", places = { { "AreaTable.AreaName_lang", 1226 } } },
+    { en = "Temple of Elune UNUSED", it = "Tempio di Elune UNUSED", places = { { "AreaTable.AreaName_lang", 699 } } },
+    { en = "Ten thousand years ago, the night elves founded a vast empire, but their reckless use of primal magic brought them to ruin. In grief, they withdrew to the forests and remained isolated there until the return of their ancient enemy, the Burning Legion. With no other choice, the night elves emerged at last from their seclusion to fight for their place in the new world.", it = "Diecimila anni fa, gli elfi della notte fondarono un vasto impero, ma il loro uso sconsiderato della magia primordiale li condusse alla rovina. Addolorati, si ritirarono nelle foreste e vi rimasero isolati fino al ritorno del loro antico nemico, la Legione Infuocata. Senza altra scelta, gli elfi della notte uscirono infine dal loro isolamento per lottare per il proprio posto nel nuovo mondo.", places = { { "ChrRaces.LoreDescription_lang", 4 } } },
+    { en = "Terky", it = "Terky", places = { { "Creature.Name_lang", 16445 } } },
+    { en = "Test Faction (not a real faction)", it = "Fazione di prova (non è una vera fazione)", places = { { "Faction.Name_lang", 931 } } },
+    { en = "TESTAzshara", it = "TESTAzshara", places = { { "AreaTable.AreaName_lang", 1218 } } },
+    { en = "Tethris Aran", it = "Tethris Aran", places = { { "AreaTable.AreaName_lang", 2404 } } },
+    { en = "Thalanaar", it = "Thalanaar", places = { { "AreaTable.AreaName_lang", 489 } } },
+    { en = "Thalassian Base Camp", it = "Campo base thalassiano", places = { { "AreaTable.AreaName_lang", 1220 } } },
+    { en = "The Alliance capital is populated by Night Elves and is located in the island of Teldrassil.  Ruled by the Priestess of the Moon, Tyrande Whisperwind.", it = "La capitale dell'Alleanza è abitata dagli Elfi della Notte e si trova sull'isola di Teldrassil. Governata dalla Sacerdotessa della Luna, Tyrande Soffiabrezza.", places = { { "Faction.Description_lang", 69 } } },
+    { en = "The Barrens", it = "Le Savane", places = { { "AreaTable.AreaName_lang", 17 } } },
+    { en = "The Blackthorne Pact", it = "Patto di Blackthorne", places = { { "Faction.Name_lang", 2768 } } },
+    { en = "The Blackwald", it = "La Selva Nera", places = { { "AreaTable.AreaName_lang", 16764 } } },
+    { en = "The Bloodfire Pit", it = "Fossa del Sangue Ardente", places = { { "AreaTable.AreaName_lang", 3383 } } },
+    { en = "The Burning of Andorhal", it = "L'Incendio di Andorhal", places = { { "AreaTable.AreaName_lang", 15828 } } },
+    { en = "The Cape of Stranglethorn", it = "Capo di Rovotorto", places = { { "AreaTable.AreaName_lang", 1577 } } },
+    { en = "The Cenarion Scouts are young nature enthusiasts dedicated to exploring and protecting the wilds of Azeroth.", it = "Gli Esploratori Cenarion sono giovani appassionati della natura, dediti a esplorare e proteggere le terre selvagge di Azeroth.", places = { { "Faction.Description_lang", 2719 } } },
+    { en = "The Crystal Vale", it = "Valle di Cristallo", places = { { "Map.MapName_lang", 2804 } } },
+    { en = "The Decrepit Ferry", it = "Il Traghetto Fatiscente", places = { { "AreaTable.AreaName_lang", 237 } } },
+    { en = "The Drunken Dwarf", it = "Il Nano Ubriaco", places = { { "AreaTable.AreaName_lang", 17738 } } },
+    { en = "The Earthen Ring is a loose collective of horde-aligned shamans and druids who seek to maintain and nurture the balance of nature on Azeroth.", it = "Il Circolo della Terra è un gruppo informale di sciamani e druidi schierati con l'Orda, che cerca di mantenere e alimentare l'equilibrio della natura su Azeroth.", places = { { "Faction.Description_lang", 2787 } } },
+    { en = "The Eventide", it = "Il Crepuscolo", places = { { "AreaTable.AreaName_lang", 17824 } } },
+    { en = "The Forbidding Expanse", it = "L'Immensa Distesa Inospitale", places = { { "AreaTable.AreaName_lang", 16372 } } },
+    { en = "The former denizens of Gnomeregan, now living in exile in Ironforge and in league with the Alliance.", it = "Gli ex abitanti di Gnomeregan, ora in esilio a Forgiardente e alleati dell'Alleanza.", places = { { "Faction.Description_lang", 54 } } },
+    { en = "The Great Lift", it = "Il Grande Ascensore", places = { { "AreaTable.AreaName_lang", 1718 } } },
+    { en = "The High Order are the Skyborne descendants of the Highborne magisters of Eldre'Thalas. Having spent the past 10,000 years in the realm of Skywall, members of the High Order seek to reclaim the ancient arcane knowledge of their forebears.", it = "L'Alto Ordine è composto dai discendenti alati dei maghi di alto lignaggio di Eldre'Thalas. Dopo aver trascorso gli ultimi 10.000 anni nel regno di Skywall, i membri dell'Alto Ordine cercano di recuperare le antiche conoscenze arcane dei loro antenati.", places = { { "Faction.Description_lang", 2779 } } },
+    { en = "The High Order is made up of the descendants of the ancient Highborne scholars of Eldre'Thalas. When the wind spirits disappeared from Zephras Isle, the High Order realized that the Skyborne's utter dependence upon their elemental patrons had left them dangerously vulnerable. A new generation of High Order have now been called upon to return to Azeroth to reclaim the arcane knowledge that they have lost, and use that power to ensure that the shen'dorei have the self-reliance to survive on their own.", it = "L'Alto Ordine è composto dai discendenti degli antichi studiosi di alto lignaggio di Eldre'Thalas. Quando gli spiriti del vento scomparvero dall'Isola Zephras, l'Alto Ordine capì che l'assoluta dipendenza degli Aerei dai loro protettori elementali li aveva resi pericolosamente vulnerabili. Una nuova generazione dell'Alto Ordine è stata chiamata a tornare su Azeroth per recuperare le conoscenze arcane perdute e usare quel potere per garantire che gli shen'dorei possano contare sulle proprie forze per sopravvivere.", places = { { "ChrRaces.LoreDescription_lang", 95 } } },
+    { en = "The Horde's robust supply network fuels its rapid expansion across Kalimdor and beyond.", it = "La solida rete di approvvigionamento dell'Orda alimenta la sua rapida espansione in Kalimdor e oltre.", places = { { "Faction.Description_lang", 2587 } } },
+    { en = "The Immortal", it = "L'Immortale", places = { { "Achievement.Title_lang", 15637 } } },
+    { en = "The League of Arathor seeks to reclaim lost land of Arathi Basin for their benefactors in Stormwind.", it = "La Lega di Arathor cerca di riconquistare le terre perdute del Bacino d'Arathi per i suoi benefattori a Roccavento.", places = { { "Faction.Description_lang", 509 } } },
+    { en = "The Maul UNUSED", it = "La Mazza UNUSED", places = { { "AreaTable.AreaName_lang", 3237 } } },
+    { en = "The orc race originated on the planet Draenor. A peaceful people with shamanic beliefs, they were enslaved by the Burning Legion and forced into war with the humans of Azeroth. Although it took many years, the orcs finally escaped the demons' corruption and won their freedom. To this day they fight for honor in an alien world that hates and reviles them.", it = "La razza degli orchi ha avuto origine sul pianeta Draenor. Popolo pacifico dalle credenze sciamaniche, fu schiavizzato dalla Legione Infuocata e costretto a combattere contro gli umani di Azeroth. Dopo molti anni, gli orchi riuscirono finalmente a sfuggire alla corruzione dei demoni e a conquistare la libertà. Ancora oggi combattono per l'onore in un mondo alieno che li odia e li disprezza.", places = { { "ChrRaces.LoreDescription_lang", 2 } } },
+    { en = "The Overlook", it = "Il Belvedere", places = { { "AreaTable.AreaName_lang", 16659 } } },
+    { en = "The Pools of VisionUNUSED", it = "Le Pozze della VisioneUNUSED", places = { { "AreaTable.AreaName_lang", 2137 } } },
+    { en = "The ravasaurs of Un'Goro Crater are incredibly deadly, but a few individuals have learned how to tame them.", it = "I ravasaurs del Cratere di Un'Goro sono incredibilmente letali, ma alcuni individui hanno imparato ad addomesticarli.", places = { { "Faction.Description_lang", 630 } } },
+    { en = "The Searing Basin", it = "Il Bacino Bruciante", places = { { "AreaTable.AreaName_lang", 15159 } } },
+    { en = "The secretive druids of the Shadowgale Forest. They operate independently, apart from any other faction on Zephras Isle.", it = "I druidi riservati della Foresta di Shadowgale. Operano in modo indipendente, estranei a qualsiasi altra fazione sull'Isola di Zephras.", places = { { "Faction.Description_lang", 2758 } } },
+    { en = "The Shaper's Terrace", it = "La Terrazza dello Scultore", places = { { "AreaTable.AreaName_lang", 16985 } } },
+    { en = "The skies are red, and your senses are overpowered with the thirst for blood!", it = "I cieli sono rossi e i tuoi sensi sono sopraffatti dalla sete di sangue!", places = { { "Faction.Description_lang", 2634 } } },
+    { en = "The Tainted Scar", it = "La Faglia Corrotta", places = { { "Map.MapName_lang", 2789 } } },
+    { en = "The Talondeep Path", it = "Il Sentiero di Talondeep", places = { { "AreaTable.AreaName_lang", 1276 } } },
+    { en = "The Temple Gardens UNUSED", it = "I Giardini del Tempio UNUSED", places = { { "AreaTable.AreaName_lang", 698 } } },
+    { en = "The Watchers", it = "I Guardiani", places = { { "Faction.Name_lang", 2819 } } },
+    { en = "The Windshapers are shamanistic spiritual leaders of the Skyborne people on Zephras Isle. They honor the elements and seek to gain a better understanding of the nature of the elemental plane to protect the shen'dorei way of life within Skywall.", it = "I Plasmatempeste sono i leader spirituali sciamanici del popolo Skyborne sull'Isola di Zephras. Onorano gli elementi e cercano di comprendere meglio la natura del piano elementale per proteggere lo stile di vita degli shen'dorei all'interno di Skywall.", places = { { "Faction.Description_lang", 2778 } } },
+    { en = "The Windshapers are the descendants of the first shen'dorei high elves to receive the wind spirits' gift of elemental skysight. A new generation of Windshapers is called to Azeroth from their home within Skywall to solve the mystery of what became of their missing elemental mentors, and will stop at nothing to see the wind spirits restored and their way of life preserved.", it = "I Plasmatempeste discendono dai primi alti elfi shen'dorei a ricevere dagli spiriti del vento il dono della vista elementale dei cieli. Una nuova generazione di Plasmatempeste viene chiamata ad Azeroth dalla propria dimora in Skywall per risolvere il mistero della scomparsa dei loro mentori elementali, e non si fermerà davanti a nulla pur di vedere gli spiriti del vento restaurati e il proprio stile di vita preservato.", places = { { "ChrRaces.LoreDescription_lang", 96 } } },
+    { en = "The worgen were first unleashed upon the Eastern Kingdoms by Archmage Arugal. <PH>", it = "I worgen furono scatenati per la prima volta nei Regni Orientali dall'Arcmago Arugal. <PH>", places = { { "ChrRaces.LoreDescription_lang", 23 } } },
+    { en = "Thelsamar", it = "Thelsamar", places = { { "AreaTable.AreaName_lang", 144 } } },
+    { en = "Thendal Cave", it = "Grotta di Thendal", places = { { "AreaTable.AreaName_lang", 16673 } } },
+    { en = "Thendal Grove", it = "Boschetto di Thendal", places = { { "AreaTable.AreaName_lang", 16622 } } },
+    { en = "Thendal Standing Stones", it = "Cerchi di Pietra di Thendal", places = { { "AreaTable.AreaName_lang", 17678 } } },
+    { en = "Thendal Village", it = "Villaggio di Thendal", places = { { "AreaTable.AreaName_lang", 16635 } } },
+    { en = "Theramore", it = "Theramore", places = { { "Faction.Name_lang", 108 } } },
+    { en = "Theramore Expeditionary Force", it = "Forza di Spedizione di Theramore", places = { { "Faction.Name_lang", 2799 } } },
+    { en = "Thief", it = "Ladro", places = { { "Creature.Name_lang", 259430 } } },
+    { en = "This faction only exists to test the editing of faction names and descriptions...", it = "Questa fazione esiste solo per testare la modifica dei nomi e delle descrizioni delle fazioni...", places = { { "Faction.Description_lang", 931 } } },
+    { en = "Though small in stature, the gnomes of Khaz Modan have used their great intellect to secure a place in history. Indeed, their subterranean kingdom, Gnomeregan, was once a marvel of steam-driven technology. Even so, due to a massive trogg invasion, the city was lost. Now its builders are vagabonds in the dwarven lands, aiding their allies as best they can.", it = "Sebbene di bassa statura, gli gnomi di Khaz Modan hanno usato il loro grande intelletto per assicurarsi un posto nella storia. Il loro regno sotterraneo, Gnomeregan, un tempo era una meraviglia della tecnologia a vapore. Eppure, a causa di una massiccia invasione di trogg, la città andò perduta. Ora i suoi costruttori sono vagabondi nelle terre dei nani, dove aiutano i loro alleati come meglio possono.", places = { { "ChrRaces.LoreDescription_lang", 7 } } },
+    { en = "Thunder Bluff UNUSED", it = "Picco del Tuono UNUSED", places = { { "AreaTable.AreaName_lang", 470 } } },
+    { en = "Timbermaw Hold - Unbound Spirit - Allies", it = "Rifugio degli Zoccoloatroce - Spirito non vincolato - Alleati", places = { { "Faction.Name_lang", 2746 } } },
+    { en = "Timbermaw Hold - Unbound Spirit - Enemies", it = "Rifugio degli Zoccoloatroce - Spirito non vincolato - Nemici", places = { { "Faction.Name_lang", 2745 } } },
+    { en = "Tiny Walking Bomb", it = "Piccola Bomba Ambulante", places = { { "Creature.Name_lang", 9656 } } },
+    { en = "Total deaths from opposite faction", it = "Morti totali causate dalla fazione avversaria", places = { { "Achievement.Title_lang", 318 } } },
+    { en = "ToWoW - Flag", it = "ToWoW - Bandiera", places = { { "Faction.Name_lang", 950 } } },
+    { en = "ToWoW - Flag Trigger Alliance (DND)", it = "ToWoW - Attivatore bandiera Alleanza (DND)", places = { { "Faction.Name_lang", 951 } } },
+    { en = "ToWoW - Flag Trigger Horde (DND)", it = "ToWoW - Attivatore bandiera Orda (DND)", places = { { "Faction.Name_lang", 954 } } },
+    { en = "Tradesmen's Terrace UNUSED", it = "Terrazza degli Artigiani UNUSED", places = { { "AreaTable.AreaName_lang", 697 } } },
+    { en = "Trogg", it = "Trogg", places = { { "Faction.Name_lang", 32 } } },
+    { en = "Troll Rogue", it = "Ladro troll", places = { { "Creature.Name_lang", 272245 } } },
+    { en = "Troll Warlock", it = "Stregone troll", places = { { "Creature.Name_lang", 272219 } } },
+    { en = "Tuskarr", it = "Tuskarr", places = { { "ChrRaces.Name_lang", 17 } } },
+    { en = "Tux", it = "Tux", places = { { "Creature.Name_lang", 272309 } } },
+    { en = "Tyler's Test Map (Desolace)", it = "Mappa di prova di Tyler (Desolace)", places = { { "AreaTable.AreaName_lang", 16532 } } },
+    { en = "Tyler's Test Subzone (Desolace)", it = "Sottozona di prova di Tyler (Desolace)", places = { { "AreaTable.AreaName_lang", 16650 } } },
+    { en = "Tyr's Hand", it = "Mano di Tyr", places = { { "AreaTable.AreaName_lang", 16370 } } },
+    { en = "Uldum", it = "Uldum", places = { { "AreaTable.AreaName_lang", 989 } } },
+    { en = "Undead Paladin", it = "Paladino non morto", places = { { "Creature.Name_lang", 272231 } } },
+    { en = "Undead Warlock", it = "Stregone non morto", places = { { "Creature.Name_lang", 272252 } } },
+    { en = "Undercity Cockroach", it = "Scarafaggio di Sepulcra", places = { { "Creature.Name_lang", 271914 } } },
+    { en = "Unused", it = "Inutilizzato", places = { { "AreaTable.AreaName_lang", 16772 } } },
+    { en = "UNUSED Alterac Valley", it = "Valle d'Alterac UNUSED", places = { { "AreaTable.AreaName_lang", 2777 } } },
+    { en = "UNUSED Bael'Gar Defeated (Daily)", it = "Sconfitto Bael'Gar (giornaliera) UNUSED", places = { { "Achievement.Title_lang", 19563 } } },
+    { en = "Unused Ironclad Cove 003", it = "Baia Corazzata inutilizzata 003", places = { { "AreaTable.AreaName_lang", 1580 } } },
+    { en = "Unused Ironcladcove", it = "Baia Corazzata inutilizzata", places = { { "AreaTable.AreaName_lang", 208 } } },
+    { en = "UNUSED Stonewrought Pass", it = "Passo Forgiapietra UNUSED", places = { { "AreaTable.AreaName_lang", 276 } } },
+    { en = "UNUSED Stratholme", it = "Stratholme UNUSED", places = { { "AreaTable.AreaName_lang", 2280 } } },
+    { en = "Unused The Deadmines 002", it = "Miniere della Morte inutilizzate 002", places = { { "AreaTable.AreaName_lang", 1579 } } },
+    { en = "UNUSEDAlcaz Island", it = "Isola di Alcaz inutilizzata", places = { { "AreaTable.AreaName_lang", 1196 } } },
+    { en = "UNUSEDShadowfang Keep 003", it = "Forte di Zannascura inutilizzato 003", places = { { "AreaTable.AreaName_lang", 2037 } } },
+    { en = "UNUSEDThe Marris Stead", it = "Tenuta Marris inutilizzata", places = { { "AreaTable.AreaName_lang", 2259 } } },
+    { en = "Ursolan", it = "Ursolan", places = { { "AreaTable.AreaName_lang", 1225 } } },
+    { en = "Used for Naxxramas NPCs", it = "Utilizzato per gli NPC di Naxxramas", places = { { "Faction.Description_lang", 2721 } } },
+    { en = "Valanaar", it = "Valanaar", places = { { "AreaTable.AreaName_lang", 16638 } } },
+    { en = "Valanaar Skydocks", it = "Moli celesti di Valanaar", places = { { "AreaTable.AreaName_lang", 16628 } } },
+    { en = "Valley of Heroes UNUSED", it = "Valle degli Eroi UNUSED", places = { { "AreaTable.AreaName_lang", 55 } } },
+    { en = "Valormok", it = "Valormok", places = { { "AreaTable.AreaName_lang", 1237 } } },
+    { en = "Vrykul", it = "Vrykul", places = { { "ChrRaces.Name_lang", 16 } } },
+    { en = "Warrior's Terrace UNUSED", it = "Terrazza dei Guerrieri UNUSED", places = { { "AreaTable.AreaName_lang", 701 } } },
+    { en = "Warsong Gulch (Winter)", it = "Forra Canto di Guerra (inverno)", places = { { "Map.MapName_lang", 2996 } } },
+    { en = "Waterworks", it = "Acquedotto", places = { { "AreaTable.AreaName_lang", 16655 } } },
+    { en = "Weevil K. Neevil", it = "Weevil K. Neevil", places = { { "Creature.Name_lang", 271636 } } },
+    { en = "West Pylon Watchtower", it = "Torre di guardia del pilone occidentale", places = { { "AreaTable.AreaName_lang", 17674 } } },
+    { en = "Westfall", it = "Marche Occidentali", places = { { "AreaTable.AreaName_lang", 206 } } },
+    { en = "Whelgar's Excavation Site", it = "Sito di scavo di Whelgar", places = { { "AreaTable.AreaName_lang", 16876 } } },
+    { en = "White Baby Murloc", it = "Piccolo murloc bianco", places = { { "Creature.Name_lang", 15358 } } },
+    { en = "White Furbolg Pet", it = "Cucciolo di furbolg bianco", places = { { "Creature.Name_lang", 271878 } } },
+    { en = "Wild Chicken", it = "Pollo selvatico", places = { { "Creature.Name_lang", 265797 } } },
+    { en = "Wildhammer Clan", it = "Clan dei Martelfato", places = { { "Faction.Name_lang", 471 } } },
+    { en = "Will it break? Let's find out!", it = "Si romperà? Scopriamolo!", places = { { "Faction.Description_lang", 2807 } } },
+    { en = "Windfield Orchard", it = "Frutteto Windfield", places = { { "AreaTable.AreaName_lang", 16663 } } },
+    { en = "Windshaper Skyborne", it = "Windshaper Skyborne", places = { { "ChrRaces.Name_lang", 96 } } },
+    { en = "Windsong Lake", it = "Lago Windsong", places = { { "AreaTable.AreaName_lang", 16625 } } },
+    { en = "Windsong Standing Stones", it = "Pietre erette di Windsong", places = { { "AreaTable.AreaName_lang", 17676 } } },
+    { en = "World Killing Blows", it = "Colpi di grazia nel mondo", places = { { "Achievement.Title_lang", 1488 } } },
+    { en = "Yellow Ent Pet", it = "Cucciolo di Ent giallo", places = { { "Creature.Name_lang", 271893 } } },
+    { en = "Zanza's Rise", it = "Altura di Zanza", places = { { "AreaTable.AreaName_lang", 3397 } } },
+    { en = "Zephras Peackeepers", it = "Guardiani di Zephras Peackeepers", places = { { "Faction.Name_lang", 2757 } } },
+    { en = "Zul'Mashar", it = "Zul'Mashar", places = { { "AreaTable.AreaName_lang", 2273 } } },
+    { en = "Zun'watha", it = "Zun'watha", places = { { "AreaTable.AreaName_lang", 352 } } },
+}
+for _, record in ipairs(records) do
+    if ns.data.ui[record.en] == nil then
+        ns.data.ui[record.en] = record.it
+    end
+    for _, place in ipairs(record.places) do
+        local field, id = place[1], place[2]
+        local entries = ns.data.extraClientTexts[field]
+        if entries == nil then
+            entries = {}
+            ns.data.extraClientTexts[field] = entries
+        end
+        if entries[id] == nil then
+            entries[id] = { en = record.en, it = record.it }
+        end
+        if field == "Creature.Name_lang" then
+            local npc = ns.data.npcs[id]
+            if npc == nil then
+                ns.data.npcs[id] = { en = record.en, name = record.it }
+            elseif type(npc) == "table" and npc.en == record.en and
+                   (npc.name == nil or npc.name == npc.en) then
+                npc.name = record.it
+            end
+        end
+    end
+end

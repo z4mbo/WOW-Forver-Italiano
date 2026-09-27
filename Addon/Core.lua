@@ -1,7 +1,7 @@
 local addonName, ns = ...
 
 ns.data = ns.data or {}
-ns.version = "0.4.0-beta"
+ns.version = "0.5.0-beta"
 
 local function isSafeString(value)
     if type(issecretvalue) == "function" and issecretvalue(value) then

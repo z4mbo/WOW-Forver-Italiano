@@ -83,13 +83,76 @@ local function compiledSpellTemplate(id, english, italian)
     if not enParts or not itParts or #enTokens == 0 or
        #enTokens ~= #itTokens then return nil end
     local pattern = { "^" }
+    -- The client renders source tokens in English order, while a verified
+    -- Italian sentence can naturally move those values to a different place.
+    -- Pair ordinary placeholders by their exact DB2 token and retain the
+    -- positional rule for conditional forms, whose source and target words
+    -- necessarily differ.
+    local itEnglishIndices, usedEnglishTokens = {}, {}
+    local englishConditionalIndices = { plural = {}, gender = {} }
+    local italianConditionalIndices = { plural = {}, gender = {} }
+    local italianConditionalOrdinals = {}
     for index, token in ipairs(enTokens) do
         local kind = spellTokenKind(token)
         if kind == "plural" or kind == "gender" then
-            if spellTokenKind(itTokens[index]) ~= kind then return nil end
-        elseif token ~= itTokens[index] then
-            return nil
+            local key = kind == "plural" and "plural" or "gender"
+            local indices = englishConditionalIndices[key]
+            indices[#indices + 1] = index
         end
+    end
+    for index, token in ipairs(itTokens) do
+        local kind = spellTokenKind(token)
+        if kind == "plural" or kind == "gender" then
+            local key = kind == "plural" and "plural" or "gender"
+            local indices = italianConditionalIndices[key]
+            indices[#indices + 1] = index
+            italianConditionalOrdinals[index] = #indices
+        end
+    end
+    for _, key in ipairs({ "plural", "gender" }) do
+        local englishIndices = englishConditionalIndices[key]
+        local italianIndices = italianConditionalIndices[key]
+        if #englishIndices ~= #italianIndices then return nil end
+        -- A single selector is unambiguous even when Italian moves it. If a
+        -- template repeats a selector kind, keep those selectors positional
+        -- because the translated forms do not identify which source form
+        -- each occurrence represents.
+        if #englishIndices > 1 then
+            for ordinal, englishIndex in ipairs(englishIndices) do
+                if italianIndices[ordinal] ~= englishIndex then return nil end
+            end
+        end
+    end
+    for italianIndex, italianToken in ipairs(itTokens) do
+        local kind = spellTokenKind(italianToken)
+        if kind == "plural" or kind == "gender" then
+            local key = kind == "plural" and "plural" or "gender"
+            local ordinal = italianConditionalOrdinals[italianIndex]
+            local englishIndex = englishConditionalIndices[key][ordinal]
+            if not englishIndex then return nil end
+            itEnglishIndices[italianIndex] = englishIndex
+            usedEnglishTokens[englishIndex] = true
+        else
+            local englishIndex
+            for candidate, englishToken in ipairs(enTokens) do
+                local candidateKind = spellTokenKind(englishToken)
+                if not usedEnglishTokens[candidate] and
+                   candidateKind ~= "plural" and candidateKind ~= "gender" and
+                   englishToken == italianToken then
+                    englishIndex = candidate
+                    break
+                end
+            end
+            if not englishIndex then return nil end
+            itEnglishIndices[italianIndex] = englishIndex
+            usedEnglishTokens[englishIndex] = true
+        end
+    end
+    for index in ipairs(enTokens) do
+        if not usedEnglishTokens[index] then return nil end
+    end
+    for index, token in ipairs(enTokens) do
+        local kind = spellTokenKind(token)
         pattern[#pattern + 1] = spellLiteralPattern(enParts[index])
         if kind == "plural" or kind == "gender" then
             pattern[#pattern + 1] = "([%a%s%'%-]+)"
@@ -103,7 +166,8 @@ local function compiledSpellTemplate(id, english, italian)
     pattern[#pattern + 1] = "$"
     cached = { english = english, italian = italian,
         pattern = table.concat(pattern), tokens = enTokens,
-        itTokens = itTokens, itParts = itParts }
+        itTokens = itTokens, itParts = itParts,
+        itEnglishIndices = itEnglishIndices }
     dynamicTemplateCache[id] = cached
     return cached
 end
@@ -134,12 +198,13 @@ local function renderDynamicSpell(template, source)
     local values = { source:match(template.pattern) }
     if #values ~= #template.tokens then return nil end
     local result = {}
-    for index, token in ipairs(template.tokens) do
-        local value, kind = values[index], spellTokenKind(token)
+    for index, italianToken in ipairs(template.itTokens) do
+        local englishIndex = template.itEnglishIndices[index]
+        local token, value = template.tokens[englishIndex], values[englishIndex]
+        local kind = spellTokenKind(token)
         if kind == "plural" or kind == "gender" then
             local englishSingular, englishPlural = conditionalForms(token, kind)
-            local italianSingular, italianPlural =
-                conditionalForms(template.itTokens[index], kind)
+            local italianSingular, italianPlural = conditionalForms(italianToken, kind)
             if token == "$lpoint:points;" and
                template.itTokens[index] == "$lpoint:punti;" then
                 italianSingular = "punto"
@@ -165,12 +230,71 @@ local function renderDynamicSpell(template, source)
     return table.concat(result)
 end
 
+-- A subset of DB2 templates embeds another spell's complete description with
+-- $@spelldesc<ID>. Expand it only from an exact, ID-keyed verified pair whose
+-- body is token-free; expressions and nested templates remain client-owned.
+local function expandReferencedSpellDescriptions(value, field)
+    if type(value) ~= "string" then return nil end
+    local expanded, changed, references = value, false, {}
+    local position = 1
+    while true do
+        local first, last, idText = expanded:find("%$@spelldesc(%d+)", position)
+        if not first then break end
+        local registry = ns.data.spellDescriptionOverrides
+        local target = registry and registry[tonumber(idText)]
+        if type(target) ~= "table" or not ns.safeText(target.en) or
+           not ns.safeText(target.description) then return nil end
+        local english, italian = target.en, target.description
+        if english:find("$", 1, true) or italian:find("$", 1, true) or
+           #english > 1200 or #italian > 1200 then return nil end
+        references[#references + 1] = tonumber(idText)
+        local prefix, suffix = expanded:sub(1, first - 1), expanded:sub(last + 1)
+        local replacement = field == "description" and italian or english
+        expanded = prefix .. replacement .. suffix
+        changed = true
+        position = first + #replacement
+    end
+    return changed and expanded or nil, references
+end
+
 local function translateDynamicSpellBody(tooltipName, id, english, italian, registry)
     local override = registry and registry[id]
     if type(override) ~= "table" or override.en ~= english or
        override.description ~= italian then return false end
+    local expandedEnglish, englishReferences =
+        expandReferencedSpellDescriptions(english, "en")
+    local expandedItalian, italianReferences =
+        expandReferencedSpellDescriptions(italian, "description")
+    englishReferences = englishReferences or {}
+    italianReferences = italianReferences or {}
+    if expandedEnglish and expandedItalian then
+        if #englishReferences ~= #italianReferences then return false end
+        for index, referenceID in ipairs(englishReferences) do
+            if italianReferences[index] ~= referenceID then return false end
+        end
+        english, italian = expandedEnglish, expandedItalian
+    elseif expandedEnglish then
+        english = expandedEnglish
+    elseif #italianReferences > 0 then
+        return false
+    end
     local template = compiledSpellTemplate(id, english, italian)
-    if not template then return false end
+    if not template then
+        if #english > 1600 or #italian > 1600 or
+           english:find("$", 1, true) or italian:find("$", 1, true) then
+            return false
+        end
+        local translated = false
+        for i = 2, 30 do
+            local line = _G[tooltipName .. "TextLeft" .. i]
+            local source = line and type(line.GetText) == "function" and
+                ns.safeText(line:GetText())
+            if source == english and ns.translateFontString(line, italian) then
+                translated = true
+            end
+        end
+        return translated
+    end
     local translated = false
     for i = 2, 30 do
         local line = _G[tooltipName .. "TextLeft" .. i]
@@ -389,15 +513,25 @@ local function processTooltip(tooltip, data, fromSpellBook)
 
     local englishName = ns.safeText(nameRegion:GetText())
     local entry = ns.data.spells and ns.data.spells[id]
-    if englishName and (type(entry) ~= "table" or englishName ~= entry.name) then
+    local nameOverrides = ns.data.spellNameOverrides
+    local nameOverride = type(nameOverrides) == "table" and nameOverrides[id] or nil
+    local exactNameOverride = type(nameOverride) == "table" and
+        ns.safeText(nameOverride.en) and ns.safeText(nameOverride.name) and
+        englishName == nameOverride.en
+    if englishName and not exactNameOverride and
+       (type(entry) ~= "table" or englishName ~= entry.name) then
         ns.captureSpell(id, { name = englishName })
     end
     local hasName = type(entry) == "table" and ns.safeText(entry.name)
     local nameMatches = false
-    if hasName then
+    if exactNameOverride then
+        nameMatches = true
+        ns.translateFontString(nameRegion, nameOverride.name)
+    elseif hasName then
         local englishBase, italianBase = displayName(entry.en, entry.name)
         nameMatches = englishName == entry.en or englishName == englishBase or
-            englishName == entry.name or englishName == italianBase
+            englishName == entry.name or englishName == italianBase or
+            (ns.safeText(entry.itSource) and englishName == entry.itSource)
         if not nameMatches then return end
         ns.translateFontString(nameRegion,
             englishName == englishBase and italianBase or entry.name)
@@ -407,6 +541,15 @@ local function processTooltip(tooltip, data, fromSpellBook)
     local sourceNameMatches = type(sourceName) == "table" and
         ns.safeText(sourceName.en) and
         (englishName == sourceName.en or englishName == sourceName.it)
+
+    -- Rank, profession level, racial, and pet-family subtext is a separate
+    -- localized Spell.db2 field. It can appear on its own tooltip line.
+    local subtexts = ns.data.spellSubtextOverrides
+    local subtext = type(subtexts) == "table" and subtexts[id] or nil
+    if type(subtext) == "table" and ns.safeText(subtext.en) and
+       ns.safeText(subtext.subtext) then
+        ns.translateTooltipBody(tooltipName, subtext.en, subtext.subtext)
+    end
 
     -- The verified DB2 batch also contains ranks without a name translation.
     -- Its ID-keyed override can translate their bodies while leaving the
@@ -426,6 +569,18 @@ local function processTooltip(tooltip, data, fromSpellBook)
            (not fromSpellBook or bookID) then
             addMissingStaticBody(tooltip, tooltipName, id, italian)
         end
+    end
+    -- Some older catalogue records normalized line endings to LF. The beta
+    -- client stores these 17 exact descriptions with CRLF, so match that
+    -- verified source independently while retaining the older record.
+    local betaAliases = ns.data.spellDescriptionBetaOverrides
+    local betaBody = type(betaAliases) == "table" and betaAliases[id] or nil
+    if type(betaBody) == "table" and ns.safeText(betaBody.en) and
+       ns.safeText(betaBody.description) then
+        ns.translateTooltipBody(tooltipName, betaBody.en,
+            betaBody.description)
+        translateDynamicSpellBody(tooltipName, id, betaBody.en,
+            betaBody.description, betaAliases)
     end
     local auraOverrides = ns.data.spellAuraDescriptionOverrides
     local aura = type(auraOverrides) == "table" and auraOverrides[id] or nil
