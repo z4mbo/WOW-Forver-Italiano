@@ -1,7 +1,7 @@
 local addonName, ns = ...
 
 ns.data = ns.data or {}
-ns.version = "0.2.0-beta"
+ns.version = "0.3.0-beta"
 
 local function isSafeString(value)
     if type(issecretvalue) == "function" and issecretvalue(value) then
@@ -171,9 +171,9 @@ local function slash(input)
             say("Uso: /wfi capture on oppure /wfi capture off")
         end
     elseif command == "status" then
-        say(string.format("v%s • %d etichette UI • %d oggetti • %d missioni • %d incantesimi • raccolta %s",
-            ns.version, countLabels(), count(ns.data.items), count(ns.data.quests),
-            count(ns.data.spells),
+        say(string.format("v%s • %d etichette UI • %d PNG • %d oggetti • %d missioni • %d incantesimi • raccolta %s",
+            ns.version, countLabels(), count(ns.data.npcs), count(ns.data.items),
+            count(ns.data.quests), count(ns.data.spells),
             WFI_DB.capture and "attiva" or "disattiva"))
     elseif command == "audit" then
         local mode = type(input) == "string" and input:lower():match("^%s*audit%s+(%S+)") or nil

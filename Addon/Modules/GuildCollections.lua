@@ -7,6 +7,9 @@ local roots = {
     "GuildFrame", "GuildRosterFrame", "GuildInfoFrame", "GuildNewsFrame",
     "GuildPerksFrame", "GuildControlFrame", "GuildBankFrame",
     "CommunitiesFrame", "CommunitiesFrame.Chat", "CommunitiesFrame.MemberList",
+    -- These roots are separate Blizzard frames in the extracted beta client;
+    -- they are not descendants of CommunitiesFrame or CollectionsJournal.
+    "CommunitiesSettingsDialog", "CommunitiesAvatarPickerDialog",
     "CalendarFrame", "FriendsFrame",
     "CollectionsJournal", "MountJournal", "PetJournal", "ToyBox",
     "HeirloomJournal", "WardrobeCollectionFrame", "WardrobeFrame",
@@ -20,9 +23,14 @@ local scheduleRefresh
 
 local function rebuildTranslations()
     translations = {}
-    for source, target in pairs((ns.data and ns.data.guildCollections) or {}) do
-        if ns.safeText(source) and ns.safeText(target) then
-            translations[source] = target
+    for _, sourceTable in ipairs({
+        (ns.data and ns.data.ui) or {},
+        (ns.data and ns.data.guildCollections) or {},
+    }) do
+        for source, target in pairs(sourceTable) do
+            if ns.safeText(source) and ns.safeText(target) then
+                translations[source] = target
+            end
         end
     end
 end
@@ -112,6 +120,8 @@ local function installHooks()
     if type(hooksecurefunc) == "function" then
         for _, name in ipairs({
             "GuildRoster_Update", "GuildInfoFrame_Update", "GuildNewsFrame_Update",
+            "CommunitiesGuildInfoFrame_UpdateText", "CommunitiesGuildInfoFrame_UpdateChallenges",
+            "CommunitiesGuildLogFrame_Update", "OpenCommunitiesSettingsDialog",
             "CommunitiesFrame_Update", "CommunitiesFrame_UpdateCommunities",
             "CalendarFrame_Update", "CollectionsJournal_Update", "MountJournal_OnShow",
             "PetJournal_UpdatePetList", "ToyBox_UpdatePages", "HeirloomsJournal_Update",
@@ -131,6 +141,7 @@ for _, event in ipairs({
     "GUILD_ROSTER_UPDATE", "GUILD_MOTD", "GUILD_RANKS_UPDATE",
     "CLUB_ADDED", "CLUB_REMOVED", "CLUB_UPDATED", "CLUB_MEMBER_UPDATED",
     "CALENDAR_UPDATE_EVENT_LIST", "CALENDAR_UPDATE_EVENT", "COMPANION_UPDATE",
+    "CLUB_FINDER_RECRUITMENT_POST_RETURNED", "CLUB_FINDER_POST_UPDATED",
     "NEW_MOUNT_ADDED", "NEW_PET_ADDED", "NEW_TOY_ADDED",
     "NEW_HEIRLOOM_ADDED", "TRANSMOG_COLLECTION_UPDATED",
 }) do

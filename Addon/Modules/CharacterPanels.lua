@@ -8,7 +8,7 @@ local panels = {
     "ReputationFrame", "ReputationFrame.ScrollBox",
     "SkillFrame", "TradeSkillFrame", "CurrencyFrame",
     "TokenFrame", "InspectFrame", "InspectPaperDollFrame",
-    "InspectPVPFrame", "InspectPVPFrameConquestBar",
+    "InspectPVPFrame", "InspectPVPFrameConquestBar", "CollectionsJournal",
 }
 
 local translations = {}

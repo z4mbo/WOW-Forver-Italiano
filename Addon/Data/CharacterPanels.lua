@@ -32,6 +32,8 @@ ns.data.characterPanels = {
     ["Faction Locked"] = "Fazione bloccata",
     ["Show Legacy Reputations"] = "Mostra le reputazioni classiche",
     ["Account Reputation"] = "Reputazione dell'account",
+    ["Move to Inactive"] = "Sposta tra le inattive",
+    ["This tribe of exiled trolls has joined forces with Thrall and the Horde. They now call Durotar their home, which they share with their orc allies."] = "Questa tribù di troll esiliati si è alleata con Thrall e con l'Orda. Ora chiama Durotar casa propria, che condivide con i suoi alleati orchi.",
     ["Account"] = "Account",
     ["All"] = "Tutte",
     ["Inactive"] = "Inattiva",
@@ -50,6 +52,15 @@ ns.data.characterPanels = {
     ["Stamina"] = "Tempra",
     ["Intellect"] = "Intelletto",
     ["Spirit"] = "Spirito",
+    ["Health:"] = "Salute:",
+    ["Energy:"] = "Energia:",
+    ["Movement Speed:"] = "Velocità di movimento:",
+    ["Strength:"] = "Forza:",
+    ["Agility:"] = "Agilità:",
+    ["Stamina:"] = "Tempra:",
+    ["Intellect:"] = "Intelletto:",
+    ["Spirit:"] = "Spirito:",
+    ["Main Hand:"] = "Mano principale:",
     ["Armor"] = "Armatura",
     ["Bonus Armor"] = "Armatura bonus",
     ["Health"] = "Salute",
@@ -196,6 +207,10 @@ ns.data.characterPanels = {
     ["Okay"] = "Conferma",
     ["OK"] = "OK",
     ["Item Level"] = "Livello oggetti",
+    ["Rogue"] = "Ladro",
+    ["Higher weapon skill increases your chance to hit."] = "Un'abilità con le armi più alta aumenta la probabilità di colpire.",
+    ["Equal-Level Enemy"] = "Nemico dello stesso livello",
+    ["Against Raid Bosses"] = "Contro i boss delle incursioni",
 }
 
 ns.data.characterPanelPatterns = {
@@ -206,4 +221,7 @@ ns.data.characterPanelPatterns = {
     { pattern = "^Item Level (%d+)%+$", replacement = "Livello oggetti %1+" },
     { pattern = "^Requires (.+) %((%d+)%)$", replacement = "Richiede %1 (%2)" },
     { pattern = "^Requires (.+)$", replacement = "Richiede %1" },
+    { pattern = "^Chance to Hit, and to avoid being Dodged or Parried: ([%+%-]?[%d%.]+%%)$", replacement = "Probabilità di colpire e di evitare schivate o parate: %1" },
+    { pattern = "^Chance to Critically Hit: ([%+%-]?[%d%.]+%%)$", replacement = "Probabilità di colpo critico: %1" },
+    { pattern = "^Glancing Blows occur (%d+)%% of the time and deal (%d+)%% less damage$", replacement = "I colpi strazianti si verificano il %1%% delle volte e infliggono il %2%% di danni in meno" },
 }

@@ -11,6 +11,9 @@ local translations = {
     ["Spellbook & Professions"] = "Libro degli incantesimi e professioni",
     ["Passive"] = "Passiva",
     ["Attack"] = "Attacco",
+    ["Press F6 to submit an issue for this Spell"] = "Premi F6 per segnalare un problema con questo incantesimo",
+    ["Press F6 to submit an issue for this Creature"] = "Premi F6 per segnalare un problema relativo a questa creatura.",
+    ["Armor Proficiency"] = "Armature",
     ["Languages"] = "Lingue",
     ["Dodge"] = "Schivata",
 }

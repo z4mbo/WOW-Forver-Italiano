@@ -4,9 +4,15 @@ An open-source, offline Italian translation addon for **World of Warcraft: Forev
 
 ## Current beta coverage
 
-Version **0.2.0-beta** contains 1,180 distinct interface label keys, 98 quest IDs, 49 item IDs, and 223 spell IDs. The interface packs include character, reputation, skills, guild, collections, settings, Edit Mode, professions, and other client panels. Many quest entries contain only a title; dialogue, objectives, and rewards have been translated for selected quests whose source text was found in the beta cache or checked against a source. The client is still English, so unhandled text stays English. Use `/wfi status` in game to see loaded entry counts.
+Version **0.3.0-beta** contains 1,667 distinct interface label keys, 178 NPC IDs, 141 quest IDs, 194 item IDs, 239 spell-name IDs, and 115 additional ID-scoped spell-description templates. Among those entries, 63 quests have Italian objectives and descriptions, 13 also have progress and completion dialogue, 73 items have tooltip descriptions, and 233 distinct spell IDs have tooltip descriptions across the name packs and description templates. The interface packs include character, reputation, skills, guild, collections, settings, Edit Mode, professions, and other client panels. These are catalogue counts from `tools/catalog-stats.py`, not a percentage of the full game or proof that every entry has been seen in play. The beta client's Italian locale is incomplete, so unhandled text remains in the client's own language, sometimes English. Use `/wfi status` in game to see loaded entry counts.
 
-This beta pack is **not a complete Italian localization**. The local quest cache contained 50 quest records, including only 10 with titles already catalogued in the addon; other quests and new server content are still missing. Some combat UI, nameplates, map artwork, audio, cinematics, player chat, third-party addons, server messages, and unencountered content can still appear in English. Classic-sourced quest entries are applied only when their live title matches the recorded source, so a reused beta ID cannot show unrelated Italian dialogue. The addon does not translate arbitrary text automatically during play and does not contact an AI service.
+This beta pack is **not a complete Italian localization**. All 53 quest IDs in the currently installed beta's local quest cache have catalogue entries, but the cache includes only quests that this client has encountered; unencountered and new server content is still missing. The beta's itIT class-name fields are empty on the character-selection screen, which loads before addons. Some spell descriptions are empty even through the client API, so descriptions with unresolved numeric tokens cannot be displayed safely. Some combat UI, nameplates, map artwork, audio, cinematics, player chat, third-party addons, server messages, and unencountered content can still appear in English. Classic-sourced quest entries are applied only when their live title matches the recorded source, so a reused beta ID cannot show unrelated Italian dialogue. The addon does not translate arbitrary text automatically during play and does not contact an AI service.
+
+### Verified client gaps
+
+The installed Forever beta build **1.60.1.70009** has empty Italian class-name fields for all nine playable classes in `ChrClasses.db2`. This is why class names can disappear on character selection when the client starts in `itIT`. Addons load only after entering the game, so this addon cannot repair that login screen. In the raw local `Spell.db2` extraction, 7,502 English spell descriptions have an empty Italian field, and another 3,790 have identical English and Italian text. These file counts exclude runtime hotfixes and do not establish what each character will encounter. The reproducible read-only audit is described in [`tools/extract-db2-locales.md`](tools/extract-db2-locales.md).
+
+Quest descriptions and NPC dialogue are often sent by the server. The installed client contains no complete export of that content. Completing those translations requires obtaining each exact text and ID from gameplay or a source provided by the Forever project. Report a missing line with its quest, spell, item, or NPC ID and the exact English text so contributors can translate it without guessing.
 
 ![Italian quest log and tracker in the Forever beta](media/quest-log-italiano.jpg)
 
@@ -14,7 +20,7 @@ This beta pack is **not a complete Italian localization**. The local quest cache
 
 ## Install on the Forever beta
 
-1. Download [the beta ZIP](dist/WOWForverItaliano-0.2.0-beta.zip) or build it using `tools/build-release.ps1`.
+1. Download [the beta ZIP](dist/WOWForverItaliano-0.3.0-beta.zip) or build it using `tools/build-release.ps1`.
 2. Extract its `WOWForverItaliano` folder into `World of Warcraft/_classic_beta_/Interface/AddOns/`.
 3. Enable **WOW Forver - Italiano** in the game's AddOns screen, then type `/reload`.
 4. Type `/wfi status` to check the loaded translation counts.

@@ -73,7 +73,7 @@ local spells = {
     -- Warlock: curses, drains, demons, and soul magic.
     [689] = { en = "Drain Life (Rank 1)", name = "Risucchio Vitale (Grado 1)" },
     [702] = { en = "Curse of Weakness (Rank 1)", name = "Maledizione della Debolezza (Grado 1)" },
-    [697] = { en = "Summon Voidwalker", name = "Evoca Vilguardia" },
+    [697] = { en = "Summon Voidwalker", name = "Evocazione: Ombra del Vuoto" },
     [712] = { en = "Summon Succubus", name = "Evoca Succube" },
     [6202] = { en = "Create Healthstone (Minor)", name = "Crea Pietra della Salute (Minore)" },
     [5784] = { en = "Summon Felsteed", name = "Evoca Destriero Vil" },

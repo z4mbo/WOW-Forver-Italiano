@@ -9,6 +9,7 @@ local panelNames = {
     "CollectionsJournal", "PVEFrame", "SettingsPanel", "MailFrame",
     "BankFrame", "AuctionHouseFrame", "ProfessionsFrame", "AchievementFrame",
     "SpellBookFrame", "PlayerSpellsFrame", "PlayerTalentFrame", "LFGParentFrame",
+    "QuestInfoFrame", "QuestInfoRewardsFrame", "MapQuestInfoRewardsFrame",
     "MinimapCluster", "QuestLogCount",
 }
 
@@ -219,10 +220,24 @@ end
 
 local function installUpdateHooks()
     if type(hooksecurefunc) ~= "function" then return end
-    for _, name in ipairs({ "QuestLogQuests_Update", "QuestMapFrame_ShowQuestDetails" }) do
+    for _, name in ipairs({
+        "QuestLogQuests_Update", "QuestMapFrame_ShowQuestDetails", "QuestInfo_Display",
+    }) do
         if type(_G[name]) == "function" and not panelHooked[name] then
             local ok = pcall(hooksecurefunc, name, scheduleRefresh)
             if ok then panelHooked[name] = true end
+        end
+    end
+    -- The extracted professions frame redraws its current page from these
+    -- methods after tabs/recipe responses change; refresh the visible labels.
+    local professions = _G.ProfessionsFrame
+    if professions then
+        for _, method in ipairs({ "Refresh", "UpdateTabs", "SetTab" }) do
+            local key = "ProfessionsFrame." .. method
+            if type(professions[method]) == "function" and not panelHooked[key] then
+                local ok = pcall(hooksecurefunc, professions, method, scheduleRefresh)
+                if ok then panelHooked[key] = true end
+            end
         end
     end
 end
@@ -234,6 +249,7 @@ for _, event in ipairs({
     "GOSSIP_SHOW", "MERCHANT_SHOW", "BANKFRAME_OPENED",
     "GET_ITEM_INFO_RECEIVED", "QUEST_LOG_UPDATE", "QUEST_WATCH_UPDATE",
     "SPELLS_CHANGED", "TRADE_SKILL_SHOW", "ZONE_CHANGED", "ZONE_CHANGED_NEW_AREA",
+    "OPEN_RECIPE_RESPONSE", "TRADE_SKILL_LIST_UPDATE", "TRADE_SKILL_DATA_SOURCE_CHANGED",
 }) do
     events:RegisterEvent(event)
 end

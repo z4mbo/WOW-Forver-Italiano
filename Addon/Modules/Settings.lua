@@ -19,9 +19,11 @@ local busy, scheduled = false, false
 local scheduleRefresh
 
 local function indexTranslations()
-    for source, translated in pairs(ns.data.settings or {}) do
-        if ns.safeText(source) and ns.safeText(translated) then
-            translations[source] = translated
+    for _, sourceTable in ipairs({ ns.data.ui or {}, ns.data.settings or {} }) do
+        for source, translated in pairs(sourceTable) do
+            if ns.safeText(source) and ns.safeText(translated) then
+                translations[source] = translated
+            end
         end
     end
     -- The general UI pass currently turns the verified global "AddOns" into

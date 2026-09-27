@@ -15,6 +15,8 @@ UI_FILES = (
     "UI.lua", "UIExtra.lua", "LiveUI.lua", "MapUI.lua", "Professions.lua",
     "SpellbookUI.lua", "CharacterPanels.lua", "GuildCollections.lua",
     "Settings.lua", "GeneralUIExact.lua",
+    "VerifiedUIGaps.lua", "VerifiedGameplayUI.lua",
+    "VerifiedCharacterSettings.lua",
 )
 
 

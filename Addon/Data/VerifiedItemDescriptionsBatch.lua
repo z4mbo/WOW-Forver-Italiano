@@ -1,0 +1,73 @@
+-- Item IDs and English descriptions verified against the installed Forever beta
+-- ItemSparse locale audit (enUS and itIT). Low-level profession recipes only.
+-- This batch adds tooltip descriptions and fills item names only where itIT was blank.
+local ADDON_NAME, ns = ...
+ns.data = ns.data or {}
+ns.data.items = ns.data.items or {}
+
+local verifiedItemDescriptions = {
+    [728] = { en = "Recipe: Westfall Stew", name = "Ricetta: Stufato delle Marche Occidentali", enDescription = "Teaches you how to cook Westfall Stew.", description = "Insegna a cucinare lo stufato delle Marche Occidentali." },
+    [2406] = { en = "Pattern: Fine Leather Boots", name = "Modello: Stivali di Cuoio Pregiato", enDescription = "Teaches you how to craft Fine Leather Boots.", description = "Insegna a creare stivali di cuoio pregiato." },
+    [2407] = { en = "Pattern: White Leather Jerkin", name = "Modello: Giaco di Cuoio Bianco", enDescription = "Teaches you how to craft a White Leather Jerkin.", description = "Insegna a creare un giaco di cuoio bianco." },
+    [2408] = { en = "Pattern: Fine Leather Gloves", name = "Modello: Guanti di Cuoio Pregiato", enDescription = "Teaches you how to craft Fine Leather Gloves.", description = "Insegna a creare guanti di cuoio pregiato." },
+    [2409] = { en = "Pattern: Dark Leather Tunic", name = "Modello: Giubba di Cuoio Scuro", enDescription = "Teaches you how to craft a Dark Leather Tunic.", description = "Insegna a creare una giubba di cuoio scuro." },
+    [2553] = { en = "Recipe: Elixir of Minor Agility", name = "Ricetta: Elisir dell'Agilità Minore", enDescription = "Teaches you how to make an Elixir of Minor Agility.", description = "Insegna a preparare un elisir dell'agilità minore." },
+    [2555] = { en = "Recipe: Swiftness Potion", name = "Ricetta: Pozione della Velocità", enDescription = "Teaches you how to make a Swiftness Potion.", description = "Insegna a preparare una pozione della velocità." },
+    [2598] = { en = "Pattern: Red Linen Robe", name = "Modello: Tonaca di Lino Rossa", enDescription = "Teaches you how to sew a Red Linen Robe.", description = "Insegna a cucire una tonaca di lino rossa." },
+    [2601] = { en = "Pattern: Gray Woolen Robe", name = "Modello: Tonaca di Lana Grigia", enDescription = "Teaches you how to sew a Gray Woolen Robe.", description = "Insegna a cucire una tonaca di lana grigia." },
+    [2697] = { en = "Recipe: Goretusk Liver Pie", name = "Ricetta: Pasticcio di Fegato di Cinghiospino", enDescription = "Teaches you how to cook a Goretusk Liver Pie.", description = "Insegna a cucinare un pasticcio di fegato di cinghiospino." },
+    [2698] = { en = "Recipe: Cooked Crab Claw", name = "Ricetta: Chela Cotta di Crostaceo", enDescription = "Teaches you how to cook a Crab Claw.", description = "Insegna a cucinare una chela di crostaceo." },
+    [2699] = { en = "Recipe: Redridge Goulash", name = "Ricetta: Gulasch alla Crestarossa", enDescription = "Teaches you how to cook a delicious Redridge Goulash.", description = "Insegna a cucinare un delizioso gulasch alla Crestarossa." },
+    [2700] = { en = "Recipe: Succulent Pork Ribs", name = "Ricetta: Costolette di Cinghiale Succulente", enDescription = "Teaches you how to cook Succulent Pork Ribs.", description = "Insegna a cucinare costolette di cinghiale succulente." },
+    [2701] = { en = "Recipe: Seasoned Wolf Kabob", name = "Ricetta: Kebab Speziato di Lupo", enDescription = "Teaches you how to cook a Seasoned Wolf Kabob.", description = "Insegna a cucinare un kebab speziato di lupo." },
+    [2881] = { en = "Plans: Runed Copper Breastplate", name = "Progetto: Pettorale Corazzato di Rame Runico", enDescription = "Teaches you how to make a Runed Copper Breastplate.", description = "Insegna a forgiare un pettorale corazzato di rame runico." },
+    [2882] = { en = "Plans: Silvered Bronze Shoulders", name = "Progetto: Spallacci di Bronzo Argentato", enDescription = "Teaches you how to make Silvered Bronze Shoulders.", description = "Insegna a forgiare spallacci di bronzo argentato." },
+    [2883] = { en = "Plans: Deadly Bronze Poniard", name = "Progetto: Pugnale Mortale di Bronzo", enDescription = "Teaches you how to make a Deadly Bronze Poniard.", description = "Insegna a forgiare un pugnale mortale di bronzo." },
+    [2889] = { en = "Recipe: Beer Basted Boar Ribs", name = "Ricetta: Costolette di Cinghiale alla Birra", enDescription = "Teaches you how to cook Beer Basted Boar Ribs.", description = "Insegna a cucinare costolette di cinghiale alla birra." },
+    [3393] = { en = "Recipe: Minor Magic Resistance Potion", name = "Ricetta: Pozione della Resistenza alla Magia Minore", enDescription = "Teaches you how to make a Minor Magic Resistance Potion.", description = "Insegna a preparare una pozione della resistenza alla magia minore." },
+    [3394] = { en = "Recipe: Potion of Poison Cleansing", name = "Ricetta: Pozione della Purificazione dai Veleni", enDescription = "Teaches you how to craft Potion of Poison Cleansing.", description = "Insegna a preparare una pozione di purificazione dai veleni." },
+    [3395] = { en = "Recipe: Limited Invulnerability Potion", name = "Ricetta: Pozione dell'Invulnerabilità Limitata", enDescription = "Teaches you how to make a Limited Invulnerability Potion.", description = "Insegna a preparare una pozione dell'invulnerabilità limitata." },
+    [3396] = { en = "Recipe: Elixir of Lesser Agility", name = "Ricetta: Elisir dell'Agilità Inferiore", enDescription = "Teaches you how to make an Elixir of Lesser Agility.", description = "Insegna a preparare un elisir dell'agilità inferiore." },
+    [3608] = { en = "Plans: Mighty Iron Hammer", name = "Progetto: Martello di Ferro Vigoroso", enDescription = "Teaches you how to make a Mighty Iron Hammer.", description = "Insegna a forgiare un martello di ferro vigoroso." },
+    [3609] = { en = "Plans: Copper Chain Vest", name = "Progetto: Veste Inanellata di Rame", enDescription = "Teaches you how to make a Copper Chain Vest.", description = "Insegna a forgiare una veste inanellata di rame." },
+    [3610] = { en = "Plans: Gemmed Copper Gauntlets", name = "Progetto: Guanti Lunghi di Rame Gemmati", enDescription = "Teaches you how to make Gemmed Copper Gauntlets.", description = "Insegna a forgiare guanti lunghi di rame gemmati." },
+    [3611] = { en = "Plans: Green Iron Boots", name = "Progetto: Stivali di Ferro Verdi", enDescription = "Teaches you how to make Green Iron Boots.", description = "Insegna a forgiare stivali di ferro verdi." },
+    [3612] = { en = "Plans: Green Iron Gauntlets", name = "Progetto: Guanti Lunghi di Ferro Verdi", enDescription = "Teaches you how to make Green Iron Gauntlets.", description = "Insegna a forgiare guanti lunghi di ferro verdi." },
+    [3678] = { en = "Recipe: Crocolisk Steak", name = "Ricetta: Bistecca di Crocolisco", enDescription = "Teaches you how to cook a Crocolisk Steak.", description = "Insegna a cucinare una bistecca di crocolisco." },
+    [3679] = { en = "Recipe: Blood Sausage", name = "Ricetta: Sanguinaccio d'Orso", enDescription = "Teaches you how to cook a Blood Sausage.", description = "Insegna a cucinare un sanguinaccio." },
+    [3680] = { en = "Recipe: Murloc Fin Soup", name = "Ricetta: Zuppa di Pinne di Murloc", enDescription = "Teaches you how to cook a Murloc Fin Soup.", description = "Insegna a cucinare una zuppa di pinne di murloc." },
+    [3681] = { en = "Recipe: Crocolisk Gumbo", name = "Ricetta: Gumbo di Crocolisco", enDescription = "Teaches you how to cook a Crocolisk Gumbo.", description = "Insegna a cucinare un gumbo di crocolisco." },
+    [3682] = { en = "Recipe: Curiously Tasty Omelet", name = "Ricetta: Omelette Stranamente Saporita", enDescription = "Teaches you how to cook a Curiously Tasty Omelet.  Don't ask, you don't want to know.", description = "Insegna a cucinare un'omelette stranamente saporita. Non chiedere: non vuoi saperlo." },
+    [3683] = { en = "Recipe: Gooey Spider Cake", name = "Ricetta: Torta Viscosa di Ragno", enDescription = "Teaches you how to cook a Gooey Spider Cake.", description = "Insegna a cucinare una torta vischiosa di ragno." },
+    [3734] = { en = "Recipe: Big Bear Steak", name = "Ricetta: Bistecca d'Orso Adulto", enDescription = "Teaches you how to cook a Big Bear Steak.", description = "Insegna a cucinare una bistecca d'orso adulto." },
+    [3735] = { en = "Recipe: Hot Lion Chops", name = "Ricetta: Bocconcini Piccanti di Leone", enDescription = "Teaches you how to cook up some Hot Lion Chops.", description = "Insegna a cucinare dei bocconcini piccanti di leone." },
+    [3736] = { en = "Recipe: Tasty Lion Steak", name = "Ricetta: Bistecca Saporita di Leone", enDescription = "Teaches you how to cook a Tasty Lion Steak.", description = "Insegna a cucinare una bistecca saporita di leone." },
+    [3737] = { en = "Recipe: Soothing Turtle Bisque", name = "Ricetta: Zuppa Cremosa di Tartaruga", enDescription = "Teaches you how to cook a Soothing Turtle Bisque.", description = "Insegna a cucinare una zuppa cremosa di tartaruga." },
+    [3830] = { en = "Recipe: Elixir of Lesser Fortitude", name = "Ricetta: Elisir della Fermezza", enDescription = "Teaches you how to make an Elixir of Fortitude.", description = "Insegna a preparare un elisir della fermezza." },
+    [3831] = { en = "Recipe: Troll's Blood Elixir", name = "Ricetta: Elisir del Sangue di Troll", enDescription = "Teaches you how to make a Troll's Blood Elixir.", description = "Insegna a preparare un elisir del sangue di troll." },
+    [3832] = { en = "Recipe: Elixir of Detect Lesser Invisibility", name = "Ricetta: Elisir Individua Invisibilità Inferiore", enDescription = "Teaches you how to make an Elixir of Detect Lesser Invisibility.", description = "Insegna a preparare un elisir di individuazione dell'invisibilità inferiore." },
+    [3866] = { en = "Plans: Jade Serpentblade", name = "Progetto: Spada del Serpente di Giada", enDescription = "Teaches you how to make a Jade Serpentblade.", description = "Insegna a forgiare una spada del serpente di giada." },
+    [3867] = { en = "Plans: Golden Iron Destroyer", name = "Progetto: Distruttore Dorato di Ferro", enDescription = "Teaches you how to make a Golden Iron Destroyer.", description = "Insegna a forgiare un distruttore dorato di ferro." },
+    [3868] = { en = "Plans: Frost Tiger Blade", name = "Progetto: Lama della Tigre del Freddo", enDescription = "Teaches you how to make a Frost Tiger Blade.", description = "Insegna a forgiare una lama della tigre del freddo." },
+    [3869] = { en = "Plans: Shadow Crescent Axe", name = "Progetto: Ascia dell'Ombra Crescente", enDescription = "Teaches you how to make a Shadow Crescent Axe.", description = "Insegna a forgiare un'ascia dell'ombra crescente." },
+    [3870] = { en = "Plans: Green Iron Shoulders", name = "Progetto: Spallacci di Ferro Verdi", enDescription = "Teaches you how to make Green Iron Shoulders.", description = "Insegna a forgiare spallacci di ferro verdi." },
+    [3871] = { en = "Plans: Golden Scale Shoulders", name = "Progetto: Spallacci di Scaglie d'Oro", enDescription = "Teaches you how to make Golden Scale Shoulders.", description = "Insegna a forgiare spallacci di scaglie d'oro." },
+    [3872] = { en = "Plans: Golden Scale Leggings", name = "Progetto: Gambiere di Scaglie d'Oro", enDescription = "Teaches you how to make Golden Scale Leggings.", description = "Insegna a forgiare gambiere di scaglie d'oro." },
+    [3873] = { en = "Plans: Golden Scale Cuirass", name = "Progetto: Corazza di Scaglie d'Oro", enDescription = "Teaches you how to make a Golden Scale Cuirass.", description = "Insegna a forgiare una corazza di scaglie d'oro." },
+    [3874] = { en = "Plans: Polished Steel Boots", name = "Progetto: Stivali d'Acciaio Lucidi", enDescription = "Teaches you how to make Polished Steel Boots.", description = "Insegna a forgiare stivali d'acciaio lucidi." },
+    [3875] = { en = "Plans: Golden Scale Boots", name = "Progetto: Stivali di Scaglie d'Oro", enDescription = "Teaches you how to make Golden Scale Boots.", description = "Insegna a forgiare stivali di scaglie d'oro." },
+    [4292] = { en = "Pattern: Green Woolen Bag", name = "Modello: Sacca di Lana Verde", enDescription = "Teaches you how to sew a Green Woolen Bag.", description = "Insegna a cucire una sacca di lana verde." },
+    [4293] = { en = "Pattern: Hillman's Leather Vest", name = "Modello: Veste di Cuoio di Collealto", enDescription = "Teaches you how to craft a Hillman's Leather Vest.", description = "Insegna a creare una veste di cuoio di Collealto." },
+    [4294] = { en = "Pattern: Hillman's Belt", name = "Modello: Cintura di Collealto", enDescription = "Teaches you how to craft a Hillman's Belt.", description = "Insegna a creare una cintura di Collealto." },
+    [4296] = { en = "Pattern: Dark Leather Shoulders", name = "Modello: Spallacci di Cuoio Scuro", enDescription = "Teaches you how to craft Dark Leather Shoulders.", description = "Insegna a creare spallacci di cuoio scuro." },
+    [4297] = { en = "Pattern: Barbaric Gloves", name = "Modello: Guanti della Barbarie", enDescription = "Teaches you how to craft Barbaric Gloves.", description = "Insegna a creare guanti della barbarie." },
+    [4298] = { en = "Pattern: Guardian Belt", name = "Modello: Cintura del Guardiano", enDescription = "Teaches you how to craft a Guardian Belt.", description = "Insegna a creare una cintura del guardiano." },
+    [4299] = { en = "Pattern: Guardian Armor", name = "Modello: Armatura del Guardiano", enDescription = "Teaches you how to craft Guardian Armor.", description = "Insegna a creare un'armatura del guardiano." },
+    [4300] = { en = "Pattern: Guardian Leather Bracers", name = "Modello: Bracciali di Cuoio da Guardiano", enDescription = "Teaches you how to craft Guardian Leather Bracers.", description = "Insegna a creare bracciali di cuoio da guardiano." },
+    [4301] = { en = "Pattern: Barbaric Belt", name = "Modello: Cintura della Barbarie", enDescription = "Teaches you how to craft a Barbaric Belt.", description = "Insegna a creare una cintura della barbarie." },
+    [4345] = { en = "Pattern: Red Woolen Boots", name = "Modello: Stivali di Lana Rossi", enDescription = "Teaches you how to sew Red Woolen Boots.", description = "Insegna a cucire stivali di lana rossi." },
+}
+
+for itemID, entry in pairs(verifiedItemDescriptions) do
+    ns.data.items[itemID] = entry
+end

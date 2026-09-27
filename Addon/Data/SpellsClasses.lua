@@ -25,7 +25,7 @@ ns.data.spells[72] = { en = "Shield Bash", name = "Colpo di Scudo" }
 
 -- Rogue
 ns.data.spells[1752] = { en = "Sinister Strike", name = "Attacco Funesto" }
-ns.data.spells[2098] = { en = "Eviscerate", name = "Eviscerazione" }
+ns.data.spells[2098] = { en = "Eviscerate", name = "Sventramento" }
 ns.data.spells[5171] = { en = "Slice and Dice", name = "Fendente Rapido" }
 ns.data.spells[1784] = { en = "Stealth", name = "Furtività" }
 ns.data.spells[1776] = { en = "Gouge", name = "Sfregio" }
@@ -92,3 +92,24 @@ ns.data.spells[8075] = { en = "Strength of Earth Totem", name = "Totem della For
 ns.data.spells[5394] = { en = "Healing Stream Totem", name = "Totem del Flusso Curativo" }
 ns.data.spells[2645] = { en = "Ghost Wolf", name = "Lupo Spettrale" }
 ns.data.spells[556] = { en = "Astral Recall", name = "Richiamo Astrale" }
+
+-- Racial ability names cross-checked against enUS and itIT SpellName.db2.
+ns.data.spells[7744] = { en = "Will of the Forsaken", name = "Volontà dei Reietti" }
+ns.data.spells[20577] = { en = "Cannibalize", name = "Cannibalismo" }
+ns.data.spells[20549] = { en = "War Stomp", name = "Zoccolo di Guerra" }
+-- Original authored Italian retained; itIT SpellName.db2 has no Name_lang for 20554.
+ns.data.spells[20554] = { en = "Berserking", name = "Berserker" }
+ns.data.spells[20572] = { en = "Blood Fury", name = "Furia Sanguinaria" }
+ns.data.spells[20573] = { en = "Hardiness", name = "Audacia" }
+-- Original authored Italian retained; itIT SpellName.db2 has no Name_lang for 20580.
+ns.data.spells[20580] = { en = "Shadowmeld", name = "Fondersi nelle Ombre" }
+ns.data.spells[20582] = { en = "Quickness", name = "Rapidità" }
+ns.data.spells[20585] = { en = "Wisp Spirit", name = "Spirito di Fuoco Fatuo" }
+ns.data.spells[20591] = { en = "Expansive Mind", name = "Apertura Mentale" }
+ns.data.spells[20593] = { en = "Engineering Specialization", name = "Specializzazione: Ingegneria" }
+ns.data.spells[20594] = { en = "Stoneform", name = "Forma di Pietra" }
+ns.data.spells[20598] = { en = "The Human Spirit", name = "Spirito Umano" }
+-- Original authored Italian retained; itIT SpellName.db2 has no Name_lang for 20600.
+ns.data.spells[20600] = { en = "Perception", name = "Percezione" }
+ns.data.spells[20589] = { en = "Escape Artist", name = "Artista della Fuga" }
+ns.data.spells[20574] = { en = "Axe Specialization", name = "Specializzazione: Asce" }

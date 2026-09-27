@@ -20,7 +20,15 @@ lua.execute(
     currentQuest = 367
     issecretvalue = function() return false end
     InCombatLockdown = function() return false end
-    UnitName = function() return "Tester" end
+    targetUnitName = "Sconosciuto"
+    targetGUID = "Creature-0-4615-0-2132-1502-0001384F4F"
+    UnitName = function(unit)
+        if unit == "target" then return targetUnitName end
+        return "Tester"
+    end
+    UnitGUID = function(unit)
+        if unit == "target" then return targetGUID end
+    end
     UnitClass = function() return "Warrior", "WARRIOR" end
     UnitRace = function() return "Undead", "Scourge" end
     GetQuestID = function() return currentQuest end
@@ -35,10 +43,25 @@ lua.execute(
     end
     C_Timer = { After = function(_, callback) callback() end }
     TooltipDataProcessor = {
-        AddTooltipPostCall = function(_, callback) itemCallback = callback end,
+        AddTooltipPostCall = function(kind, callback)
+            if kind == 1 then itemCallback = callback end
+            if kind == 2 then spellCallback = callback end
+        end,
     }
-    Enum = { TooltipDataType = { Item = 1 } }
-    hooksecurefunc = function(name, callback) hooks[name] = callback end
+    Enum = { TooltipDataType = { Item = 1, Spell = 2 } }
+    hooksecurefunc = function(target, methodOrCallback, callback)
+        if type(target) == "table" then
+            local original = target[methodOrCallback]
+            if type(original) ~= "function" then error("missing method") end
+            target[methodOrCallback] = function(self, ...)
+                local results = { original(self, ...) }
+                callback(self, ...)
+                return table.unpack(results)
+            end
+        else
+            hooks[target] = methodOrCallback
+        end
+    end
     QuestInfo_ShowTitle = function() end
     QuestInfo_ShowDescriptionText = function() end
     QuestInfo_ShowObjectivesText = function() end
@@ -55,6 +78,8 @@ lua.execute(
             GetObjectType = function() return "FontString" end,
         }
     end
+    TargetFrame = { name = makeText("Sconosciuto"), TargetFrameContent = { TargetFrameContentMain = {} } }
+    TargetFrame.TargetFrameContent.TargetFrameContentMain.Name = TargetFrame.name
     QuestInfoTitleHeader = makeText("A New Plague")
     QuestInfoDescriptionText = makeText("English NPC quest description")
     QuestInfoRewardText = makeText("Good work, <name>.")
@@ -63,6 +88,9 @@ lua.execute(
     QuestLogQuestCount = makeText("|cffffd100Quests: |r|cffffffff4/40|r")
     TestTooltipTextLeft1 = makeText("Hearthstone")
     testTooltip = { GetName = function() return "TestTooltip" end }
+    RogueTooltipTextLeft1 = makeText("Sventramento")
+    RogueTooltipTextLeft2 = makeText("Finishing move that causes damage per combo point, increased by Attack Power:\\n1 point : 6-10 damage\\n2 points: 11-15 damage\\n3 points: 16-20 damage\\n4 points: 21-25 damage\\n5 points: 26-30 damage")
+    rogueTooltip = { GetName = function() return "RogueTooltip" end }
     """
 )
 
@@ -88,6 +116,8 @@ lua.execute(
     QuestInfoTitleHeader.text = "Rovistare ad Albamorta"
     hooks.QuestInfo_Display()
     assert(QuestInfoDescriptionText.text == NS.data.quests[3902].description)
+    QuestInfoDescriptionText:SetText("English body returned after a late beta redraw")
+    assert(QuestInfoDescriptionText.text == NS.data.quests[3902].description)
     currentQuest = 367 -- A reused beta ID must not apply old dialogue.
     QuestInfoTitleHeader.text = "Unknown Forever Quest"
     QuestInfoDescriptionText.text = "New beta dialogue"
@@ -95,6 +125,25 @@ lua.execute(
     assert(QuestInfoDescriptionText.text == "New beta dialogue")
     itemCallback(testTooltip, { id = 6948 })
     assert(TestTooltipTextLeft1.text == "Pietra del Ritorno")
+    spellCallback(rogueTooltip, { id = 2098 })
+    assert(RogueTooltipTextLeft1.text == "Sventramento")
+    assert(RogueTooltipTextLeft2.text:find("Mossa finale che infligge danni", 1, true))
+    assert(RogueTooltipTextLeft2.text:find("1 punto: 6-10 danni", 1, true))
+    assert(RogueTooltipTextLeft2.text:find("5 punti: 26-30 danni", 1, true))
+    assert(not RogueTooltipTextLeft2.text:find("Finishing move", 1, true))
+    TargetFrame.name:SetText("Sconosciuto")
+    assert(TargetFrame.name.text == "Zombi miserabile")
+    targetGUID = "Creature-0-4615-0-2132-1502-00023850B5"
+    targetUnitName = "Wretched Zombie"
+    TargetFrame.name:SetText("Sconosciuto")
+    assert(TargetFrame.name.text == "Sconosciuto")
+    targetUnitName = "Sconosciuto"
+    targetGUID = "Creature-0-4615-0-2132-1501-0001384F4F"
+    TargetFrame.name:SetText("Sconosciuto")
+    assert(TargetFrame.name.text == "Zombi senza mente")
+    targetGUID = "Creature-0-4615-0-2132-99999-0001384F4F"
+    TargetFrame.name:SetText("Sconosciuto")
+    assert(TargetFrame.name.text == "Sconosciuto")
     local rendered = NS.renderText("Ciao <name>, <class> <race>!")
     assert(rendered == "Ciao Tester, Guerriero Non Morto!")
     assert(NS.renderText("Prima frase.$b$bSeconda frase.") == "Prima frase.\\n\\nSeconda frase.")

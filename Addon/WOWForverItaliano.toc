@@ -3,7 +3,7 @@
 ## Notes: Traduzioni italiane offline per World of Warcraft: Forever.
 ## Notes-itIT: Traduzioni italiane offline per missioni, oggetti, incantesimi, professioni e interfaccia di WoW: Forever.
 ## Author: WOW Forver - Italiano contributors
-## Version: 0.2.0-beta
+## Version: 0.3.0-beta
 ## Category: Localization
 ## SavedVariables: WFI_DB
 ## IconTexture: Interface\AddOns\WOWForverItaliano\Media\Icon
@@ -20,13 +20,24 @@ Data\LiveQuests.lua
 Data\TirisfalQuestTextExtra.lua
 Data\TirisfalBetaQuestText.lua
 Data\BetaQuestCorrections.lua
+Data\QuestCacheExpanded.lua
 Data\LiveItems.lua
+Data\VerifiedItemDescriptionsBatch.lua
 Data\LiveUI.lua
 Data\MapUI.lua
 Data\TrackerObjectives.lua
+Data\VerifiedNPCs.lua
+Data\VerifiedNPCsBatch.lua
+Data\VerifiedNPCsNext.lua
+Data\VerifiedNPCsRemaining.lua
 Data\SpellsCaster.lua
 Data\SpellsClasses.lua
 Data\SpellsExtra.lua
+Data\VerifiedItemsSpells.lua
+Data\VerifiedItemsNext.lua
+Data\VerifiedSpellDescriptionsBatch.lua
+Data\VerifiedSpellDescriptionsNext.lua
+Data\VerifiedSpellDescriptionsMore.lua
 Data\SpellbookUI.lua
 Data\UIExtra.lua
 Data\GeneralUIExact.lua
@@ -37,14 +48,21 @@ Data\GuildCollections.lua
 Data\Settings.lua
 Data\ObservedSettings.lua
 Data\ObservedHelpTips.lua
+Data\VerifiedUIGaps.lua
+Data\VerifiedUIGapsMore.lua
+Data\VerifiedGameplayUI.lua
+Data\VerifiedCharacterSettings.lua
 Data\QuestUIExact.lua
 Data\SocialUIExact.lua
 Modules\UI.lua
 Modules\EditMode.lua
 Modules\Items.lua
+Modules\NPCs.lua
 Modules\Spells.lua
+Modules\SpellbookMissing.lua
 Modules\Quests.lua
 Modules\QuestUIExact.lua
+Modules\QuestTooltip.lua
 Modules\CharacterPanels.lua
 Modules\GuildCollections.lua
 Modules\SocialUIExact.lua

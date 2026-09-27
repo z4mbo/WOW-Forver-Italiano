@@ -3,6 +3,8 @@ local _, ns = ...
 -- Forever 1.60.x uses the Mainline quest panels. Work on the displayed text,
 -- rather than replacing Blizzard's quest APIs (which other addons also use).
 local hooked = {}
+local lateTextHooked = setmetatable({}, { __mode = "k" })
+local lateTextBusy = setmetatable({}, { __mode = "k" })
 
 local function validQuestID(value)
     if issecretvalue and issecretvalue(value) then
@@ -128,6 +130,38 @@ local function applyProgress(capture)
     apply(id, "progress", _G.QuestProgressText, nil, capture)
 end
 
+-- The Forever beta can rewrite an NPC quest body after QuestInfo_Display and
+-- its individual QuestInfo callbacks. Observe the actual text regions too, so
+-- a late redraw does not leave a translated title above an English body.
+local function installLateTextHooks()
+    if type(hooksecurefunc) ~= "function" then return end
+    for _, binding in ipairs({
+        { "QuestInfoTitleHeader", "title" },
+        { "QuestInfoDescriptionText", "description" },
+        { "QuestInfoObjectivesText", "objectives" },
+        { "QuestInfoRewardText", "completion", "reward" },
+        { "QuestProgressTitleText", "progressTitle" },
+        { "QuestProgressText", "progress" },
+    }) do
+        local region = _G[binding[1]]
+        if region and not lateTextHooked[region] and type(region.SetText) == "function" then
+            local ok = pcall(hooksecurefunc, region, "SetText", function(self)
+                if lateTextBusy[self] then return end
+                lateTextBusy[self] = true
+                pcall(function()
+                    if binding[2] == "progressTitle" or binding[2] == "progress" then
+                        applyProgress(false)
+                    else
+                        apply(questInfoID(), binding[2], self, binding[3], false)
+                    end
+                end)
+                lateTextBusy[self] = nil
+            end)
+            if ok then lateTextHooked[region] = true end
+        end
+    end
+end
+
 local function hook(name, callback)
     if hooked[name] or type(_G[name]) ~= "function" or type(hooksecurefunc) ~= "function" then
         return
@@ -162,11 +196,36 @@ local function installTrackerHook()
             ns.translateFontString(block.HeaderText,
                 shown:sub(1, startPos - 1) .. entry.title .. shown:sub(endPos + 1))
         end
+
+        -- Forever's itIT client returns a literal "(null)" for the second
+        -- completed objective of quest 364. Verify the API objective index and
+        -- its live completion counts before replacing only that tracker line.
+        if id ~= 364 or block.id ~= 364 or
+           type(block.GetExistingLine) ~= "function" or
+           type(C_QuestLog) ~= "table" or
+           type(C_QuestLog.GetQuestObjectives) ~= "function" then
+            return
+        end
+        local objectiveOK, objectives = pcall(C_QuestLog.GetQuestObjectives, 364)
+        local objective = objectiveOK and type(objectives) == "table" and objectives[2]
+        if type(objective) ~= "table" or objective.finished ~= true or
+           objective.numFulfilled ~= 8 or objective.numRequired ~= 8 or
+           ns.safeText(objective.text) ~= "8/8 (null)" then
+            return
+        end
+        local line = block:GetExistingLine(2)
+        local textRegion = line and line.Text
+        if not textRegion or type(textRegion.GetText) ~= "function" or
+           ns.safeText(textRegion:GetText()) ~= "8/8 (null)" then
+            return
+        end
+        ns.translateFontString(textRegion, "8/8 Zombi miserabili uccisi")
     end)
     if ok then trackerHooked = true end
 end
 
 local function installHooks()
+    installLateTextHooks()
     hook("QuestInfo_ShowTitle", function()
         applyInfo("title", "QuestInfoTitleHeader", nil, true)
     end)
@@ -231,9 +290,11 @@ events:SetScript("OnEvent", function(_, event)
     if event == "ADDON_LOADED" then
         installHooks()
     elseif event == "PLAYER_REGEN_ENABLED" then
+        installHooks()
         refreshVisible()
     elseif event == "QUEST_DETAIL" or event == "QUEST_PROGRESS" or
            event == "QUEST_COMPLETE" then
+        installHooks()
         refreshVisible()
         if C_Timer and type(C_Timer.After) == "function" then
             C_Timer.After(0, refreshVisible)
