@@ -23,35 +23,46 @@ local hookQuestCounter
 
 local function indexTranslations()
     translatedText = {}
+    local explicitUI, ambiguous = {}, {}
     for source, translated in pairs(ns.data.ui or {}) do
         if ns.safeText(source) and ns.safeText(translated) then
+            translatedText[source] = translated
+            explicitUI[source] = true
+        end
+    end
+    local function addSharedTranslation(source, translated)
+        if not ns.safeText(source) or not ns.safeText(translated) or
+           explicitUI[source] or ambiguous[source] then return end
+        local existing = translatedText[source]
+        if existing and existing ~= translated then
+            translatedText[source] = nil
+            ambiguous[source] = true
+        else
             translatedText[source] = translated
         end
     end
     for _, entry in pairs(ns.data.quests or {}) do
         if type(entry) == "table" and ns.safeText(entry.enTitle) and ns.safeText(entry.title) then
-            translatedText[entry.enTitle] = entry.title
+            addSharedTranslation(entry.enTitle, entry.title)
         end
     end
     for _, entry in pairs(ns.data.items or {}) do
         if type(entry) == "table" and ns.safeText(entry.en) and ns.safeText(entry.name) then
-            translatedText[entry.en] = entry.name
+            addSharedTranslation(entry.en, entry.name)
         end
     end
     for _, entry in pairs(ns.data.spells or {}) do
         if type(entry) == "table" and ns.safeText(entry.en) and ns.safeText(entry.name) then
-            translatedText[entry.en] = entry.name
+            addSharedTranslation(entry.en, entry.name)
             local englishBase = entry.en:match("^(.-)%s*%(Rank %d+%)$")
             local italianBase = entry.name:match("^(.-)%s*%(Grado %d+%)$")
             if englishBase and italianBase then
-                translatedText[englishBase] = italianBase
+                addSharedTranslation(englishBase, italianBase)
             end
         end
     end
     for source, translated in pairs(ns.data.objectives or {}) do
-        if ns.safeText(source) and ns.safeText(translated) then
-            translatedText[source] = translated
-        end
+        addSharedTranslation(source, translated)
     end
 end
 

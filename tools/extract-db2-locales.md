@@ -23,6 +23,13 @@ contain identical text; that can include names or intentional unchanged text and
 does not, by itself, prove a missing translation. Dynamic `${...}` placeholders
 in spell descriptions are preserved literally; this script does not render them.
 
+Some higher-ID `itIT` values in this beta contain unrelated Italian text. For
+example, `SpellName` ID 409947 has `Earth Shield` in English but `Crudeltà` in
+Italian. The name and spell-description reuse generators accept Italian donor
+text only from client IDs below 100000, while still matching the target's
+English text and ID exactly. This source-quality filter is conservative; it is
+not a guarantee that every lower-ID entry is correct.
+
 The reader rejects missing schema layouts, missing expected columns, truncated
 string fields, and differing locale layout hashes. The audit reflects only the
 DB2 dumps supplied. It does not apply `DBCache.bin` hotfixes or establish whether

@@ -1,7 +1,7 @@
 local addonName, ns = ...
 
 ns.data = ns.data or {}
-ns.version = "0.3.0-beta"
+ns.version = "0.4.0-beta"
 
 local function isSafeString(value)
     if type(issecretvalue) == "function" and issecretvalue(value) then
@@ -133,6 +133,33 @@ local function count(tableValue)
     return n
 end
 
+local function countWithField(tableValue, field)
+    local total = 0
+    if type(tableValue) == "table" then
+        for _, entry in pairs(tableValue) do
+            if type(entry) == "table" and ns.safeText(entry[field]) then
+                total = total + 1
+            end
+        end
+    end
+    return total
+end
+
+local function countDescriptions(entries, overrides)
+    local ids = {}
+    if type(entries) == "table" then
+        for id, entry in pairs(entries) do
+            if type(entry) == "table" and ns.safeText(entry.description) then
+                ids[id] = true
+            end
+        end
+    end
+    if type(overrides) == "table" then
+        for id in pairs(overrides) do ids[id] = true end
+    end
+    return count(ids)
+end
+
 local function countLabels()
     local labels = {}
     for _, source in ipairs({ ns.data.ui, ns.data.characterPanels,
@@ -171,10 +198,15 @@ local function slash(input)
             say("Uso: /wfi capture on oppure /wfi capture off")
         end
     elseif command == "status" then
-        say(string.format("v%s • %d etichette UI • %d PNG • %d oggetti • %d missioni • %d incantesimi • raccolta %s",
-            ns.version, countLabels(), count(ns.data.npcs), count(ns.data.items),
-            count(ns.data.quests), count(ns.data.spells),
-            WFI_DB.capture and "attiva" or "disattiva"))
+        say(string.format("v%s • %d etichette UI • %d PNG • %d missioni • raccolta %s",
+            ns.version, countLabels(), count(ns.data.npcs),
+            count(ns.data.quests), WFI_DB.capture and "attiva" or "disattiva"))
+        say(string.format("Catalogo: %d nomi oggetti • %d descrizioni oggetti • %d nomi incantesimi • %d descrizioni incantesimi • %d descrizioni effetti",
+            countWithField(ns.data.items, "name"),
+            countDescriptions(ns.data.items, ns.data.itemDescriptionOverrides),
+            countWithField(ns.data.spells, "name"),
+            countDescriptions(ns.data.spells, ns.data.spellDescriptionOverrides),
+            count(ns.data.spellAuraDescriptionOverrides)))
     elseif command == "audit" then
         local mode = type(input) == "string" and input:lower():match("^%s*audit%s+(%S+)") or nil
         if mode == "globals" and type(ns.auditGlobals) == "function" then

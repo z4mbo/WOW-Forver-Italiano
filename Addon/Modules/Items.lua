@@ -20,16 +20,30 @@ local function processTooltip(tooltip, data)
     if englishName and (type(entry) ~= "table" or englishName ~= entry.name) then
         ns.captureItem(id, { name = englishName })
     end
-    if type(entry) ~= "table" or not ns.safeText(entry.name) then return end
     if not nameRegion then return end
-    -- If a beta build changes the item ID/name pairing, do not display a wrong
-    -- translation. Color codes and item quality remain controlled by the client.
-    if ns.safeText(entry.en) and englishName and englishName ~= entry.en and englishName ~= entry.name then
-        return
+    local descriptions = ns.data.itemDescriptionOverrides
+    local body = type(descriptions) == "table" and descriptions[id] or nil
+    local catalogueMatches = type(entry) == "table" and ns.safeText(entry.name) and
+        (englishName == entry.en or englishName == entry.name or
+         (ns.safeText(entry.itSource) and englishName == entry.itSource))
+    local overrideMatches = type(body) == "table" and
+        ns.safeText(body.enName) and
+        (englishName == body.enName or englishName == body.itName or
+         (catalogueMatches and
+          (englishName == entry.name or englishName == entry.itSource)))
+    -- Both paths require the exact item ID and its observed source/display
+    -- name. The description path may run without translating the item name.
+    if not catalogueMatches and not overrideMatches then return end
+    if catalogueMatches then
+        -- Color codes and item quality remain controlled by the client.
+        ns.translateFontString(nameRegion, entry.name)
+        if ns.safeText(entry.enDescription) and ns.safeText(entry.description) then
+            ns.translateTooltipBody(tooltipName, entry.enDescription, entry.description)
+        end
     end
-    ns.translateFontString(nameRegion, entry.name)
-    if ns.safeText(entry.enDescription) and ns.safeText(entry.description) then
-        ns.translateTooltipBody(tooltipName, entry.enDescription, entry.description)
+    if overrideMatches and ns.safeText(body.enDescription) and
+       ns.safeText(body.description) then
+        ns.translateTooltipBody(tooltipName, body.enDescription, body.description)
     end
 end
 

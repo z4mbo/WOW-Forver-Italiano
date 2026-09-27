@@ -101,6 +101,8 @@ class MissingSpellBodyTests(unittest.TestCase):
             "Core.lua",
             "Data/SpellsClasses.lua",
             "Data/VerifiedSpellDescriptionsBatch.lua",
+            "Data/BulkSpellDescriptionsA.lua",
+            "Data/SpellStaticSourceNames.lua",
             "Modules/Spells.lua",
         ):
             self.lua.execute((ADDON / name).read_text(encoding="utf-8"),
@@ -119,6 +121,13 @@ class MissingSpellBodyTests(unittest.TestCase):
         # A second callback on the same tooltip must not append a duplicate.
         g.callbacks[2](g.tooltip, self.lua.table(id=7744))
         self.assertEqual(g.tooltip.added, 1)
+
+    def test_source_verified_bulk_static_body_is_added(self):
+        g = self.lua.globals()
+        self.assertEqual(g.fire(3, 12, "Replenish Spirit", None, 455), 1)
+        self.assertEqual(g.GameTooltipTextLeft4.text,
+                         "Ripristina il mana del bersaglio.")
+        self.assertEqual(g.fire(3, 12, "Unrelated Spell", None, 455), 0)
 
     def test_present_body_and_client_description_block_insertion(self):
         g = self.lua.globals()

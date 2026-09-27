@@ -4,7 +4,13 @@ An open-source, offline Italian translation addon for **World of Warcraft: Forev
 
 ## Current beta coverage
 
-Version **0.3.0-beta** contains 1,667 distinct interface label keys, 178 NPC IDs, 141 quest IDs, 194 item IDs, 239 spell-name IDs, and 115 additional ID-scoped spell-description templates. Among those entries, 63 quests have Italian objectives and descriptions, 13 also have progress and completion dialogue, 73 items have tooltip descriptions, and 233 distinct spell IDs have tooltip descriptions across the name packs and description templates. The interface packs include character, reputation, skills, guild, collections, settings, Edit Mode, professions, and other client panels. These are catalogue counts from `tools/catalog-stats.py`, not a percentage of the full game or proof that every entry has been seen in play. The beta client's Italian locale is incomplete, so unhandled text remains in the client's own language, sometimes English. Use `/wfi status` in game to see loaded entry counts.
+Version **0.4.0-beta** contains thousands of ID-scoped spell, aura, and item tooltip translations, plus verified labels for character, reputation, skills, guild, collections, settings, Edit Mode, professions, and other client panels. It retains 141 quest IDs and 178 NPC IDs. Run `tools/catalog-stats.py` for current catalogue counts and `/wfi status` in game for loaded counts. These numbers describe matching records in the addon, not a percentage of gameplay or proof that every tooltip has appeared in Italian during play.
+
+The exact local DB2 gap counts for this release are in [`docs/coverage-0.4.0.it.md`](docs/coverage-0.4.0.it.md).
+
+The read-only audit of the installed beta build **1.60.1.70009** identifies 11,292 spell-description, 4,616 aura-description, 3,984 item-description, 16,773 spell-name, and 7,351 item-name IDs whose Italian field is blank or identical to English. `tools/report-local-db2-coverage.py` counts only addon records with the exact same ID and English source. It does not count server-only text or prove that the game displays each record. The beta also has some higher-ID Italian fields containing unrelated text, so these gap totals understate the localization problem.
+
+Some missing text was reused from the locally installed Retail Italian data after exact source and ambiguity checks. UI reuse additionally requires matching `GlobalStrings.db2` ID and tag in the beta and Retail clients. The process is documented in [`tools/retail-db2-reuse.md`](tools/retail-db2-reuse.md). The generated Lua packs work offline and do not require Retail to be installed by players.
 
 This beta pack is **not a complete Italian localization**. All 53 quest IDs in the currently installed beta's local quest cache have catalogue entries, but the cache includes only quests that this client has encountered; unencountered and new server content is still missing. The beta's itIT class-name fields are empty on the character-selection screen, which loads before addons. Some spell descriptions are empty even through the client API, so descriptions with unresolved numeric tokens cannot be displayed safely. Some combat UI, nameplates, map artwork, audio, cinematics, player chat, third-party addons, server messages, and unencountered content can still appear in English. Classic-sourced quest entries are applied only when their live title matches the recorded source, so a reused beta ID cannot show unrelated Italian dialogue. The addon does not translate arbitrary text automatically during play and does not contact an AI service.
 
@@ -20,7 +26,7 @@ Quest descriptions and NPC dialogue are often sent by the server. The installed 
 
 ## Install on the Forever beta
 
-1. Download [the beta ZIP](dist/WOWForverItaliano-0.3.0-beta.zip) or build it using `tools/build-release.ps1`.
+1. Download [the beta ZIP](dist/WOWForverItaliano-0.4.0-beta.zip) or build it using `tools/build-release.ps1`.
 2. Extract its `WOWForverItaliano` folder into `World of Warcraft/_classic_beta_/Interface/AddOns/`.
 3. Enable **WOW Forver - Italiano** in the game's AddOns screen, then type `/reload`.
 4. Type `/wfi status` to check the loaded translation counts.

@@ -100,7 +100,7 @@ local verifiedSpellDescriptions = {
     -- Exact enUS provenance: Spell.db2 ID 8092, Description_lang.
     [8092] = { en = "Blasts the target for $s1 Shadow damage, but causes a high amount of threat.", description = "Colpisce il bersaglio con $s1 danni da ombra, ma genera molta minaccia." },
     -- Exact enUS provenance: Spell.db2 ID 8122, Description_lang.
-    [8122] = { en = "The caster lets out a psychic scream, causing $i enemies within $a1 yards to flee for $d.  Damage caused may interrupt the effect.", description = "L’incantatore emette un urlo psichico che fa fuggire per $d $i nemici entro $a1 m. I danni inflitti possono interrompere l’effetto." },
+    [8122] = { en = "The caster lets out a psychic scream, causing $i enemies within $a1 yards to flee for $d.  Damage caused may interrupt the effect.", description = "L’incantatore emette un urlo psichico che costringe $i nemici entro $a1 m a fuggire per $d. I danni inflitti possono interrompere l’effetto." },
     -- Exact enUS provenance: Spell.db2 ID 8921, Description_lang.
     [8921] = { en = "Burns the enemy for $s2 Arcane damage and then an additional $o1 Arcane damage over $d.", description = "Brucia il nemico, infliggendo $s2 danni arcani e altri $o1 danni arcani nell’arco di $d." },
     -- Exact enUS provenance: Spell.db2 ID 8936, Description_lang.
@@ -121,9 +121,9 @@ local verifiedSpellDescriptions = {
     [10934] = { en = "Smite an enemy for $s1 Holy damage.", description = "Colpisce un nemico con una Punizione che infligge $s1 danni sacri." },
 }
 
-ns.data.spellDescriptionOverridesByID = ns.data.spellDescriptionOverridesByID or {}
+ns.data.spellDescriptionOverrides = ns.data.spellDescriptionOverrides or {}
 for id, description in pairs(verifiedSpellDescriptions) do
-    ns.data.spellDescriptionOverridesByID[id] = description
+    ns.data.spellDescriptionOverrides[id] = description
     local entry = ns.data.spells[id]
     if type(entry) == "table" then
         entry.enDescription = description.en

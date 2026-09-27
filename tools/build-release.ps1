@@ -1,5 +1,5 @@
 param(
-    [string]$Version = '0.3.0-beta'
+    [string]$Version = '0.4.0-beta'
 )
 
 $ErrorActionPreference = 'Stop'
@@ -11,6 +11,8 @@ $zipFile = Join-Path $zipDirectory "WOWForverItaliano-$Version.zip"
 
 if (-not (Test-Path -LiteralPath $toc)) { throw "Missing addon manifest: $toc" }
 
+$manifestFiles = [System.Collections.Generic.List[System.IO.FileInfo]]::new()
+$manifestFiles.Add((Get-Item -LiteralPath $toc))
 Get-Content -LiteralPath $toc | ForEach-Object {
     $entry = $_.Trim()
     if ($entry -and -not $entry.StartsWith('##') -and -not $entry.StartsWith('#')) {
@@ -18,6 +20,13 @@ Get-Content -LiteralPath $toc | ForEach-Object {
         if (-not (Test-Path -LiteralPath $file -PathType Leaf)) {
             throw "Manifest references missing file: $entry"
         }
+        $manifestFiles.Add((Get-Item -LiteralPath $file))
+    }
+}
+$mediaDirectory = Join-Path $addonDirectory 'Media'
+if (Test-Path -LiteralPath $mediaDirectory -PathType Container) {
+    Get-ChildItem -LiteralPath $mediaDirectory -Recurse -File | ForEach-Object {
+        $manifestFiles.Add($_)
     }
 }
 
@@ -26,7 +35,7 @@ if (Test-Path -LiteralPath $zipFile) { Remove-Item -LiteralPath $zipFile -Force 
 Add-Type -AssemblyName System.IO.Compression.FileSystem
 $archive = [System.IO.Compression.ZipFile]::Open($zipFile, [System.IO.Compression.ZipArchiveMode]::Create)
 try {
-    Get-ChildItem -LiteralPath $addonDirectory -Recurse -File | ForEach-Object {
+    $manifestFiles | Sort-Object FullName -Unique | ForEach-Object {
         $relative = [System.IO.Path]::GetRelativePath($addonDirectory, $_.FullName).Replace('\', '/')
         $entryName = "WOWForverItaliano/$relative"
         [System.IO.Compression.ZipFileExtensions]::CreateEntryFromFile(

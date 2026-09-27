@@ -45,8 +45,13 @@ quest_descriptions = sum(1 for _, q in data["quests"].items()
                          if q["description"] is not None)
 quest_dialogues = sum(1 for _, q in data["quests"].items()
                       if q["progress"] is not None and q["completion"] is not None)
-item_descriptions = sum(1 for _, item in data["items"].items()
-                        if item["description"] is not None)
+item_description_ids = {
+    item_id for item_id, item in data["items"].items()
+    if item["description"] is not None
+}
+item_overrides = data["itemDescriptionOverrides"]
+if item_overrides is not None:
+    item_description_ids.update(item_overrides.keys())
 spell_ids_with_descriptions = {
     id for id, entry in data["spells"].items() if entry["description"] is not None
 }
@@ -58,7 +63,9 @@ print(f"quest_ids={count(data['quests'])}")
 print(f"quest_descriptions={quest_descriptions}")
 print(f"quest_dialogues={quest_dialogues}")
 print(f"item_ids={count(data['items'])}")
-print(f"item_descriptions={item_descriptions}")
+print(f"item_description_override_ids={count(item_overrides)}")
+print(f"item_descriptions={len(item_description_ids)}")
 print(f"spell_name_ids={count(data['spells'])}")
 print(f"spell_description_override_ids={count(data['spellDescriptionOverrides'])}")
+print(f"spell_aura_description_override_ids={count(data['spellAuraDescriptionOverrides'])}")
 print(f"spell_ids_with_descriptions={len(spell_ids_with_descriptions)}")

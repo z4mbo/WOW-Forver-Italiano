@@ -11,7 +11,7 @@ ns.data.spells = ns.data.spells or {}
 
 -- Warrior
 ns.data.spells[6673] = { en = "Battle Shout", name = "Grido di Battaglia" }
-ns.data.spells[78] = { en = "Heroic Strike", name = "Attacco Eroico" }
+ns.data.spells[78] = { en = "Heroic Strike", name = "Assalto Eroico" }
 ns.data.spells[100] = { en = "Charge", name = "Carica" }
 ns.data.spells[772] = { en = "Rend", name = "Lacerare" }
 ns.data.spells[6343] = { en = "Thunder Clap", name = "Tuono" }

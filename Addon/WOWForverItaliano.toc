@@ -3,7 +3,7 @@
 ## Notes: Traduzioni italiane offline per World of Warcraft: Forever.
 ## Notes-itIT: Traduzioni italiane offline per missioni, oggetti, incantesimi, professioni e interfaccia di WoW: Forever.
 ## Author: WOW Forver - Italiano contributors
-## Version: 0.3.0-beta
+## Version: 0.4.0-beta
 ## Category: Localization
 ## SavedVariables: WFI_DB
 ## IconTexture: Interface\AddOns\WOWForverItaliano\Media\Icon
@@ -33,11 +33,68 @@ Data\VerifiedNPCsRemaining.lua
 Data\SpellsCaster.lua
 Data\SpellsClasses.lua
 Data\SpellsExtra.lua
+Data\SpellTranslationMemory.lua
+Data\SpellAuraTranslationMemory.lua
+Data\BulkAuraFrequent.lua
+Data\BulkAuraFrequentMore.lua
+Data\BulkAuraFrequentNext.lua
+Data\BulkAuraFrequentFinal.lua
+Data\VerifiedRetailCorrections.lua
+Data\RetailSpellAuraMemory.lua
+Data\RetailSpellAuraTextMatchMemory.lua
+Data\SpellAuraCrossFieldTranslationMemory.lua
+Data\SpellAuraTranslationAliases.lua
 Data\VerifiedItemsSpells.lua
 Data\VerifiedItemsNext.lua
+Data\BulkItemDescriptions.lua
+Data\BulkItemDescriptionsHigh.lua
+Data\BulkItemFrequent.lua
+Data\BulkItemFrequentMore.lua
+Data\BulkItemFrequentNext.lua
+Data\BulkItemFrequentFinal.lua
+Data\BulkItemFrequentNext2.lua
+Data\BulkItemFrequentNext3.lua
+Data\BulkItemFrequentNext4.lua
+Data\RetailItemDescriptionMemory.lua
+Data\RetailItemDescriptionTextMatchMemory.lua
+Data\ItemNameTranslationMemory.lua
+Data\BulkItemNamesA.lua
+Data\RetailItemNameMemory.lua
+Data\RetailItemNameTextMatchMemory.lua
+Data\VerifiedCorruptedItemNames.lua
+Data\ItemTranslationAliases.lua
 Data\VerifiedSpellDescriptionsBatch.lua
 Data\VerifiedSpellDescriptionsNext.lua
 Data\VerifiedSpellDescriptionsMore.lua
+Data\BulkSpellDescriptionsA.lua
+Data\BulkSpellDescriptionsB.lua
+Data\BulkSpellDescriptionsC.lua
+Data\BulkSpellDescriptionsSame.lua
+Data\BulkSpellFrequentA.lua
+Data\BulkSpellFrequentB.lua
+Data\BulkSpellFrequentC.lua
+Data\BulkSpellFrequentD.lua
+Data\BulkSpellFrequentE.lua
+Data\BulkSpellFrequentF.lua
+Data\BulkSpellFrequentG.lua
+Data\BulkSpellFrequentH.lua
+Data\BulkSpellFrequentI.lua
+Data\BulkSpellFrequentJ.lua
+Data\BulkSpellFrequentK.lua
+Data\BulkSpellFrequentL.lua
+Data\RetailSpellDescriptionMemory.lua
+Data\RetailSpellTextMatchMemory.lua
+Data\VerifiedTextQualityB.lua
+Data\VerifiedTextQualityC.lua
+Data\VerifiedTextQualityD.lua
+Data\VerifiedGrammarSelectors.lua
+Data\SpellCrossFieldTranslationMemory.lua
+Data\SpellNameTranslationMemory.lua
+Data\RetailSpellNameMemory.lua
+Data\RetailSpellNameTextMatchMemory.lua
+Data\BulkSpellNamesB.lua
+Data\SpellTranslationAliases.lua
+Data\SpellStaticSourceNames.lua
 Data\SpellbookUI.lua
 Data\UIExtra.lua
 Data\GeneralUIExact.lua
@@ -52,6 +109,10 @@ Data\VerifiedUIGaps.lua
 Data\VerifiedUIGapsMore.lua
 Data\VerifiedGameplayUI.lua
 Data\VerifiedCharacterSettings.lua
+Data\VerifiedUIGapsFinal.lua
+Data\VerifiedUIGapsExtra.lua
+Data\VerifiedGlobalStringsManualA.lua
+Data\RetailGlobalStringsMemory.lua
 Data\QuestUIExact.lua
 Data\SocialUIExact.lua
 Modules\UI.lua

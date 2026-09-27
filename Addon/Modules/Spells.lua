@@ -11,25 +11,10 @@ local function displayName(source, translated)
     return source, translated
 end
 
--- Only the locally checked Spell.db2 batch uses this renderer. The client
--- expands spell tokens before a FontString can be read, so a literal lookup
--- cannot match these descriptions. Keep the ID gate as well as the complete
--- English-template match; no individual words are substituted in isolation.
-local verifiedDynamicIDs = {}
-for _, id in ipairs({
-    20577, 1752, 1757, 1758, 1759, 1760, 1766, 1776, 1784, 1856,
-    1943, 2098, 2589, 2590, 2591, 5171, 5277, 6770, 8676, 8681,
-    8721, 8724, 11267, 11268, 11269, 11273, 11274, 11275, 11279,
-    11280, 11281, 11285, 11286, 11289, 11290, 11293, 11294,
-    11297, 11300, 11305, 11341, 11342, 11343, 11357, 11358,
-    11400, 20572, 20574,
-    133, 168, 205, 284, 324, 331, 339, 348, 465, 467, 529,
-    546, 547, 587, 588, 591, 592, 594, 604, 639, 642, 643,
-    687, 689, 695, 696, 698, 702, 703, 704, 706, 707, 710,
-    711, 724, 740, 755, 758, 759, 768, 769, 770, 774, 778,
-    779, 780, 781, 782, 783, 834, 837, 845, 865, 871, 885,
-    913, 915, 945, 1004, 1026, 1126, 1243, 1459,
-}) do verifiedDynamicIDs[id] = true end
+-- The client expands DB2 spell tokens before a FontString can be read. Every
+-- dynamic replacement is gated by an exact spell ID, a locally verified
+-- English/Italian pair in spellDescriptionOverrides, and an anchored match
+-- of the whole rendered English body. Unsupported tokens remain untouched.
 
 local function splitSpellTemplate(value)
     local parts, tokens, position = {}, {}, 1
@@ -42,7 +27,9 @@ local function splitSpellTemplate(value)
         parts[#parts + 1] = value:sub(position, dollar - 1)
         local tail = value:sub(dollar)
         local token = tail:match("^%$%b{}") or
-            tail:match("^%$l[%a]+:[%a]+;") or
+            tail:match("^%$[lL][^:;]+:[^:;]+;") or
+            tail:match("^%$[gG][^:;]+:[^;]+;") or
+            tail:match("^%$%*%d+;[%a]%d+") or
             tail:match("^%$%d*[%a]+%d*")
         if not token then return nil end
         tokens[#tokens + 1] = token
@@ -54,11 +41,17 @@ local function splitSpellTemplate(value)
 end
 
 local function spellTokenKind(token)
-    if token == "$lpoint:points;" or token == "$lpoint:punti;" then
-        return "point"
-    end
+    if token:match("^%$[lL][^:;]+:[^:;]+;$") then return "plural" end
+    if token:match("^%$[gG][^:;]+:[^;]+;$") then return "gender" end
     if token:match("^%$%d*d$") then return "duration" end
     return "number"
+end
+
+local function conditionalForms(token, kind)
+    if kind == "plural" then
+        return token:match("^%$[lL]([^:;]+):([^:;]+);$")
+    end
+    return token:match("^%$[gG]([^:;]+):([^;]+);$")
 end
 
 local function spellLiteralPattern(literal)
@@ -92,11 +85,14 @@ local function compiledSpellTemplate(id, english, italian)
     local pattern = { "^" }
     for index, token in ipairs(enTokens) do
         local kind = spellTokenKind(token)
-        if kind ~= "point" and token ~= itTokens[index] then return nil end
-        if kind == "point" and spellTokenKind(itTokens[index]) ~= "point" then return nil end
+        if kind == "plural" or kind == "gender" then
+            if spellTokenKind(itTokens[index]) ~= kind then return nil end
+        elseif token ~= itTokens[index] then
+            return nil
+        end
         pattern[#pattern + 1] = spellLiteralPattern(enParts[index])
-        if kind == "point" then
-            pattern[#pattern + 1] = "(points?)"
+        if kind == "plural" or kind == "gender" then
+            pattern[#pattern + 1] = "([%a%s%'%-]+)"
         elseif kind == "duration" then
             pattern[#pattern + 1] = "([%d][%d%.,]*%s*[%a%.]*)"
         else
@@ -106,7 +102,8 @@ local function compiledSpellTemplate(id, english, italian)
     pattern[#pattern + 1] = spellLiteralPattern(enParts[#enParts])
     pattern[#pattern + 1] = "$"
     cached = { english = english, italian = italian,
-        pattern = table.concat(pattern), tokens = enTokens, itParts = itParts }
+        pattern = table.concat(pattern), tokens = enTokens,
+        itTokens = itTokens, itParts = itParts }
     dynamicTemplateCache[id] = cached
     return cached
 end
@@ -118,6 +115,20 @@ local durationUnits = {
     day = "day", days = "day",
 }
 
+local function italianDuration(value)
+    local number, unit = value:match("^(%d[%d%.,]*)%s*([%a%.]*)$")
+    if not number or #number > 20 then return nil end
+    if unit == "" then return number end
+    local mapped = durationUnits[unit:gsub("%.$", ""):lower()]
+    if not mapped then return nil end
+    if mapped == "hour" then
+        mapped = tonumber(number) == 1 and "ora" or "ore"
+    elseif mapped == "day" then
+        mapped = tonumber(number) == 1 and "giorno" or "giorni"
+    end
+    return number .. " " .. mapped
+end
+
 local function renderDynamicSpell(template, source)
     if #source > 2400 then return nil end
     local values = { source:match(template.pattern) }
@@ -125,23 +136,25 @@ local function renderDynamicSpell(template, source)
     local result = {}
     for index, token in ipairs(template.tokens) do
         local value, kind = values[index], spellTokenKind(token)
-        if kind == "point" then
-            if value ~= "point" and value ~= "points" then return nil end
-            value = value == "point" and "punto" or "punti"
+        if kind == "plural" or kind == "gender" then
+            local englishSingular, englishPlural = conditionalForms(token, kind)
+            local italianSingular, italianPlural =
+                conditionalForms(template.itTokens[index], kind)
+            if token == "$lpoint:points;" and
+               template.itTokens[index] == "$lpoint:punti;" then
+                italianSingular = "punto"
+            end
+            if value == englishSingular then
+                value = italianSingular
+            elseif value == englishPlural then
+                value = italianPlural
+            else
+                return nil
+            end
         elseif kind == "duration" then
             if #value > 32 then return nil end
-            local number, unit = value:match("^(%d[%d%.,]*)%s*([%a%.]*)$")
-            if not number or #number > 20 then return nil end
-            if unit ~= "" then
-                local mapped = durationUnits[unit:gsub("%.$", ""):lower()]
-                if not mapped then return nil end
-                if mapped == "hour" then
-                    mapped = tonumber(number) == 1 and "ora" or "ore"
-                elseif mapped == "day" then
-                    mapped = tonumber(number) == 1 and "giorno" or "giorni"
-                end
-                value = number .. " " .. mapped
-            end
+            value = italianDuration(value)
+            if not value then return nil end
         elseif #value > 20 or not value:match("^%d[%d%.,]*$") then
             return nil
         end
@@ -152,8 +165,10 @@ local function renderDynamicSpell(template, source)
     return table.concat(result)
 end
 
-local function translateDynamicSpellBody(tooltipName, id, english, italian)
-    if not verifiedDynamicIDs[id] then return false end
+local function translateDynamicSpellBody(tooltipName, id, english, italian, registry)
+    local override = registry and registry[id]
+    if type(override) ~= "table" or override.en ~= english or
+       override.description ~= italian then return false end
     local template = compiledSpellTemplate(id, english, italian)
     if not template then return false end
     local translated = false
@@ -212,11 +227,58 @@ local function translateEviscerateBody(tooltipName, id)
     end
 end
 
+-- The two conditional templates below contain nested client directives that
+-- the ordinary spell-template matcher cannot parse. Accept only their fully
+-- rendered English sentences for these exact IDs and preserve numeric values.
+local function translateConditionalSpellBody(tooltipName, id)
+    if id ~= 339 and id ~= 740 then return end
+    for i = 2, 30 do
+        local line = _G[tooltipName .. "TextLeft" .. i]
+        local source = line and type(line.GetText) == "function" and
+            ns.safeText(line:GetText())
+        if source then
+            local translated
+            if id == 339 then
+                local damage, duration, limit = source:match(
+                    "^Roots the target in place and causes ([%d][%d%.,]*) Nature damage over ([%d][%d%.,]*%s*[%a%.]+)%.%s+Damage caused may interrupt the effect%.%s+You may have up to ([%d]+) targets Rooted at a time%.$")
+                if not damage then
+                    damage, duration = source:match(
+                        "^Roots the target in place and causes ([%d][%d%.,]*) Nature damage over ([%d][%d%.,]*%s*[%a%.]+)%.%s+Damage caused may interrupt the effect%.%s+You may only have 1 target Rooted at a time%.$")
+                    if damage then limit = "1" end
+                end
+                local when = duration and italianDuration(duration)
+                if damage and when and limit then
+                    local target = limit == "1" and "un solo bersaglio" or
+                        ("fino a " .. limit .. " bersagli")
+                    translated = "Immobilizza il bersaglio e gli infligge " .. damage ..
+                        " danni da natura nell'arco di " .. when ..
+                        ". I danni inflitti possono interrompere l'effetto. " ..
+                        "Puoi mantenere immobilizzati " .. target .. " alla volta."
+                end
+            else
+                local range, amount, interval, unit, duration, durationUnit =
+                    source:match(
+                    "^Regenerates all nearby party members within ([%d][%d%.,]*) yards for ([%d][%d%.,]*) every ([%d][%d%.,]*) ([%a%.]+) for ([%d][%d%.,]*) ([%a%.]+)%.%s+Druid must channel to maintain the spell%.$")
+                local every = interval and unit and italianDuration(interval .. " " .. unit)
+                local when = duration and durationUnit and
+                    italianDuration(duration .. " " .. durationUnit)
+                if range and amount and every and when then
+                    translated = "Rigenera la salute dei membri del gruppo vicini " ..
+                        "entro " .. range .. " m, ripristinando " .. amount ..
+                        " ogni " .. every .. " per " .. when ..
+                        ". Il druido deve canalizzare l'incantesimo."
+                end
+            end
+            if translated then ns.translateFontString(line, translated) end
+        end
+    end
+end
+
 -- This beta can return no description for a spell whose local Spell.db2 has
--- verified text. Only 7744 has a token-free body that can be inserted without
--- guessing effect values. A yellow left line is treated as an existing body.
+-- verified text. Insert only a token-free body after an exact spellbook ID and
+-- source-name match. A yellow left line is treated as an existing body.
 local function addMissingStaticBody(tooltip, tooltipName, id, italian)
-    if id ~= 7744 or not ns.safeText(italian) or
+    if not ns.safeText(italian) or
        italian:find("$", 1, true) or not C_Spell or
        type(C_Spell.GetSpellDescription) ~= "function" or
        type(tooltip.NumLines) ~= "function" or
@@ -340,6 +402,11 @@ local function processTooltip(tooltip, data, fromSpellBook)
         ns.translateFontString(nameRegion,
             englishName == englishBase and italianBase or entry.name)
     end
+    local sourceNames = ns.data.spellSourceNames
+    local sourceName = type(sourceNames) == "table" and sourceNames[id] or nil
+    local sourceNameMatches = type(sourceName) == "table" and
+        ns.safeText(sourceName.en) and
+        (englishName == sourceName.en or englishName == sourceName.it)
 
     -- The verified DB2 batch also contains ranks without a name translation.
     -- Its ID-keyed override can translate their bodies while leaving the
@@ -354,12 +421,23 @@ local function processTooltip(tooltip, data, fromSpellBook)
     end
     if ns.safeText(english) and ns.safeText(italian) then
         ns.translateTooltipBody(tooltipName, english, italian)
-        translateDynamicSpellBody(tooltipName, id, english, italian)
-        if nameMatches and (not fromSpellBook or bookID) then
+        translateDynamicSpellBody(tooltipName, id, english, italian, overrides)
+        if (nameMatches or sourceNameMatches) and
+           (not fromSpellBook or bookID) then
             addMissingStaticBody(tooltip, tooltipName, id, italian)
         end
     end
+    local auraOverrides = ns.data.spellAuraDescriptionOverrides
+    local aura = type(auraOverrides) == "table" and auraOverrides[id] or nil
+    local auraEnglish = type(aura) == "table" and aura.en or nil
+    local auraItalian = type(aura) == "table" and aura.description or nil
+    if ns.safeText(auraEnglish) and ns.safeText(auraItalian) then
+        ns.translateTooltipBody(tooltipName, auraEnglish, auraItalian)
+        translateDynamicSpellBody(tooltipName, id, auraEnglish, auraItalian,
+            auraOverrides)
+    end
     if nameMatches then translateEviscerateBody(tooltipName, id) end
+    translateConditionalSpellBody(tooltipName, id)
     translateTooltipLabels(tooltipName)
 end
 
@@ -371,12 +449,13 @@ local function observeBookTooltip(tooltip, elapsed)
     if bookTooltipElapsed < 0.1 then return end
     bookTooltipElapsed = 0
     if not ns.enabled() or
-       (type(tooltip.IsShown) == "function" and not tooltip:IsShown()) or
-       playerSpellBookItemID(tooltip) ~= 7744 then return end
+       (type(tooltip.IsShown) == "function" and not tooltip:IsShown()) then return end
+    local id = playerSpellBookItemID(tooltip)
+    if not id then return end
     local body = ns.data.spellDescriptionOverrides and
-        ns.data.spellDescriptionOverrides[7744]
+        ns.data.spellDescriptionOverrides[id]
     local italian = type(body) == "table" and ns.safeText(body.description)
-    if not italian then return end
+    if not italian or italian:find("$", 1, true) then return end
     local count = type(tooltip.NumLines) == "function" and tooltip:NumLines()
     if type(issecretvalue) == "function" and issecretvalue(count) then return end
     if type(count) ~= "number" or count < 1 or count > 30 then return end

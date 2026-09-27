@@ -86,6 +86,13 @@ lua.execute(
     QuestProgressTitleText = makeText("A New Plague")
     QuestProgressText = makeText("Have you gathered the blood, <name>?")
     QuestLogQuestCount = makeText("|cffffd100Quests: |r|cffffffff4/40|r")
+    SharedLabel = makeText("Shared Label")
+    GameMenuFrame = {
+        IsShown = function() return true end,
+        GetRegions = function() return SharedLabel end,
+        GetChildren = function() end,
+        HookScript = function() end,
+    }
     TestTooltipTextLeft1 = makeText("Hearthstone")
     testTooltip = { GetName = function() return "TestTooltip" end }
     RogueTooltipTextLeft1 = makeText("Sventramento")
@@ -97,6 +104,9 @@ lua.execute(
 for raw in (ADDON / "WOWForverItaliano.toc").read_text(encoding="utf-8").splitlines():
     entry = raw.strip()
     if entry.endswith(".lua"):
+        if entry == "Modules\\UI.lua":
+            ns.data.spells[19999991] = lua.table(en="Shared Label", name="Primo nome")
+            ns.data.spells[19999992] = lua.table(en="Shared Label", name="Secondo nome")
         lua.execute((ADDON / entry.replace("\\", "/")).read_text(encoding="utf-8"), "WOWForverItaliano", ns)
 
 lua.execute(
@@ -107,6 +117,7 @@ lua.execute(
     assert(NS.enabled())
     assert(NS.data.items[6948].name == "Pietra del Ritorno")
     assert(QuestLogQuestCount.text == "Missioni: 4/40")
+    assert(SharedLabel.text == "Shared Label")
     hooks.QuestInfo_ShowTitle()
     assert(QuestInfoTitleHeader.text == NS.data.quests[367].title)
     hooks.QuestInfo_ShowRewardText()

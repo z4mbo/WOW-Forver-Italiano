@@ -31,6 +31,8 @@ This project is intended to grow with WoW: Forever. Please include the **client 
 
 The `en`/`enTitle` field is used to avoid showing an outdated translation if a beta name changes, and to translate matching visual labels. For item body text, record the exact English description as `enDescription` and the Italian as `description`. For quests, include the beta build and source in a nearby comment or contribution notes. Partial entries are welcome. An absent translation leaves the original game text visible.
 
+Generated Retail reuse packs have two provenance levels: the same ID plus exact English source, or exact English text with only one Italian Retail translation across donor IDs. Both must pass placeholder checks and preserve existing addon entries. See [`tools/retail-db2-reuse.md`](tools/retail-db2-reuse.md). The beta's high-ID Italian fields can contain unrelated text; do not treat a nonempty field as proof of a valid translation.
+
 `/wfi audit globals` saves client UI globals and `/wfi audit visible` saves text from selected open Blizzard panels locally. `/wfi capture on` records encountered quest, item, and spell text. After `/reload`, review the local SavedVariables file and extract only the relevant lines. `tools/extract_questcache_text.py` lists verbatim quest cache fragments, but it does not determine whether a fragment is a title, objective, description, or another field. Never translate a fragment whose boundaries or role are unclear.
 
 Build a release with `pwsh -File tools/build-release.ps1`. Test the resulting ZIP in `_classic_beta_` and include a genuine in-game screenshot showing the relevant panel.
